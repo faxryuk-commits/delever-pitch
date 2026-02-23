@@ -298,8 +298,9 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
   .subtitle{font-size:14px}
 }
 @media(max-width:768px){
-  .slide{padding:24px 20px 70px}
-  .slide .slide-content{max-width:100%!important}
+  .slide{padding:24px 20px 70px;overflow-x:hidden!important}
+  .slide .slide-content{max-width:100%!important;overflow-x:hidden!important}
+  .slide .slide-content *{max-width:100%!important;box-sizing:border-box!important}
   .slide[data-slide="1"] .slide-content{grid-template-columns:1fr!important}
   .slide[data-slide="1"] .cover-mockup{height:220px!important;overflow:hidden!important}
   .cover-mockup img{max-width:100%!important}
