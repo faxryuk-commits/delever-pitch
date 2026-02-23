@@ -1426,7 +1426,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
 
 <!-- ===== SLIDE 13: CONTACT ===== -->
 <div class="slide" data-slide="13">
-  <canvas class="particles-canvas" id="particles16"></canvas>
+  <canvas class="particles-canvas" id="particles13"></canvas>
   <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%">
     <div class="section-label animate d1"><span class="en">Get in Touch</span><span class="ru">Связаться с нами</span></div>
     <h1 class="animate d2" style="font-size:44px"><span class="en">Let's Connect</span><span class="ru">Давайте поговорим</span></h1>
@@ -1489,7 +1489,10 @@ function goToSlide(n) {
   if (n < 1 || n > totalSlides) return;
   slides[currentSlide - 1].classList.remove('active');
   currentSlide = n;
-  slides[currentSlide - 1].classList.add('active');
+  const target = slides[currentSlide - 1];
+  target.classList.remove('active');
+  void target.offsetWidth;
+  target.classList.add('active');
   document.getElementById('slideCounter').textContent = String(currentSlide).padStart(2,'0') + ' / ' + totalSlides;
   document.getElementById('progressFill').style.width = ((currentSlide / totalSlides) * 100) + '%';
   triggerSlideAnimations(currentSlide);
@@ -1497,7 +1500,14 @@ function goToSlide(n) {
 function nextSlide() { goToSlide(currentSlide + 1); }
 function prevSlide() { goToSlide(currentSlide - 1); }
 function handleProgressClick(e) { const r = document.getElementById('progressBar').getBoundingClientRect(); goToSlide(Math.max(1, Math.min(totalSlides, Math.ceil(((e.clientX - r.left) / r.width) * totalSlides)))); }
-function toggleFullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+function toggleFullscreen() {
+  const el = document.documentElement;
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+  }
+}
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
   else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
@@ -1505,9 +1515,13 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'Home') goToSlide(1);
   else if (e.key === 'End') goToSlide(totalSlides);
 });
-let touchStartX = 0;
-document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-document.addEventListener('touchend', e => { const d = touchStartX - e.changedTouches[0].clientX; if (Math.abs(d) > 50) { d > 0 ? nextSlide() : prevSlide(); } });
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true});
+document.addEventListener('touchend', e => {
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  const dy = touchStartY - e.changedTouches[0].clientY;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx > 0 ? nextSlide() : prevSlide(); }
+}, {passive: true});
 
 /* ===== COUNTERS ===== */
 function animateCounters(slide) {
@@ -1530,20 +1544,12 @@ function animateBars(slide) {
   slide.querySelectorAll('.pm-fill.slide-anim-bar').forEach(el => { setTimeout(() => { el.style.width = el.dataset.width; }, 400); });
 }
 
-/* ===== FLOW ===== */
-function animateFlow(slide) {
-  const items = slide.querySelectorAll('#flowDiagram > *');
-  if (!items.length) return;
-  items.forEach((item, i) => { setTimeout(() => { item.style.transition = 'opacity .4s, transform .4s'; item.style.opacity = '1'; item.style.transform = 'translateY(0)'; }, 200 + i * 120); });
-}
-
 /* ===== TRIGGER ===== */
 function triggerSlideAnimations(n) {
   const s = slides[n - 1];
   setTimeout(() => {
     animateCounters(s);
     animateBars(s);
-    if (n === 4) animateFlow(s);
   }, 200);
 }
 
@@ -1564,34 +1570,37 @@ function initParticles(id) {
 }
 
 initParticles('particles1');
-initParticles('particles16');
+initParticles('particles13');
 triggerSlideAnimations(1);
 
 /* ===== VCARD QR CODE ===== */
 (function() {
-  var vcard = [
-    'BEGIN:VCARD',
-    'VERSION:3.0',
-    'N:Yusupov;Fakhriddin',
-    'FN:Fakhriddin Yusupov',
-    'TITLE:CEO & Co-founder',
-    'ORG:Delever',
-    'TEL;TYPE=CELL:+998973436397',
-    'EMAIL:fyusupov@delever.uz',
-    'URL:https://delever.io',
-    'URL:https://www.linkedin.com/in/fakhriddin-yusupov-821086b3',
-    'END:VCARD'
-  ].join('\n');
-  var qr = qrcode(0, 'M');
-  qr.addData(vcard);
-  qr.make();
-  var el = document.getElementById('vcard-qr');
-  if (el) {
-    var svg = qr.createSvgTag({cellSize: 4, margin: 0, scalable: true});
-    el.innerHTML = svg;
-    var svgEl = el.querySelector('svg');
-    if (svgEl) { svgEl.style.width = '100%'; svgEl.style.height = '100%'; }
-  }
+  if (typeof qrcode === 'undefined') { console.warn('QR library not loaded'); return; }
+  try {
+    var vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      'N:Yusupov;Fakhriddin',
+      'FN:Fakhriddin Yusupov',
+      'TITLE:CEO & Co-founder',
+      'ORG:Delever',
+      'TEL;TYPE=CELL:+998973436397',
+      'EMAIL:fyusupov@delever.uz',
+      'URL:https://delever.io',
+      'URL:https://www.linkedin.com/in/fakhriddin-yusupov-821086b3',
+      'END:VCARD'
+    ].join('\n');
+    var qr = qrcode(0, 'M');
+    qr.addData(vcard);
+    qr.make();
+    var el = document.getElementById('vcard-qr');
+    if (el) {
+      var svg = qr.createSvgTag({cellSize: 4, margin: 0, scalable: true});
+      el.innerHTML = svg;
+      var svgEl = el.querySelector('svg');
+      if (svgEl) { svgEl.style.width = '100%'; svgEl.style.height = '100%'; }
+    }
+  } catch(e) { console.warn('QR generation failed:', e); }
 })();
 </script>
 </body>
