@@ -338,6 +338,18 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
   [style*="grid-template-columns:1fr auto 1fr auto 1fr auto 1fr"]>svg{display:none!important}
   /* Prevent any element from exceeding viewport */
   img,svg,canvas{max-width:100%}
+  /* Slide 1: contain mockup images */
+  .cover-mockup{overflow:hidden!important}
+  .cover-mockup img{max-width:100%!important}
+  /* Slide 8: TAM/SAM/SOM cards stack internal flex */
+  [style*="gap:28px"] [style*="display:flex;align-items:center;gap:16px"]{flex-wrap:wrap!important}
+  [style*="gap:28px"] [style*="display:flex;align-items:center;gap:16px"]>div[style*="font-size:36px"]{width:100%}
+  /* Slide 9: CAC journey row — stack on mobile */
+  .slide[data-slide="9"] [style*="display:flex;align-items:center;gap:0"]{flex-wrap:wrap!important;gap:12px!important;justify-content:center}
+  .slide[data-slide="9"] [style*="display:flex;align-items:center;gap:0"]>div[style*="flex:1"]{flex:1 1 120px!important;min-width:100px}
+  .slide[data-slide="9"] [style*="display:flex;align-items:center;gap:0"]>div[style*="flex:0 0 auto"]{flex:0 0 auto}
+  .slide[data-slide="9"] [style*="display:flex;align-items:center;gap:0"]>div[style*="width:1px;height:60px"]{display:none!important}
+  .slide[data-slide="9"] [style*="display:flex;align-items:center;gap:0"]>div[style*="text-align:center;flex:0 0 auto"]{flex:1 1 100%!important;margin-top:8px;padding-top:12px;border-top:1px solid #e5e7eb}
   /* Slide 6: Markets row wrap on mobile */
   [style*="flex-wrap:nowrap"]{flex-wrap:wrap!important}
   /* Bar chart columns */
@@ -365,6 +377,14 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
   /* Cover mockup images constrain inside container */
   .cover-mockup img[style*="right:-20px"]{right:0!important}
   .cover-mockup img[style*="left:-10px"]{left:0!important}
+  /* Slide 9: smaller CAC text */
+  .slide[data-slide="9"] [style*="font-size:44px"]{font-size:28px!important}
+  .slide[data-slide="9"] [style*="font-size:56px"]{font-size:36px!important}
+  .slide[data-slide="9"] [style*="font-size:32px"]{font-size:24px!important}
+  .slide[data-slide="9"] [style*="padding:28px 32px"]{padding:16px!important}
+  /* Slide 8: smaller TAM numbers */
+  .slide[data-slide="8"] [style*="font-size:36px"]{font-size:24px!important}
+  .slide[data-slide="8"] [style*="width:56px;height:56px"]{width:40px!important;height:40px!important}
 }
 @media(max-width:390px){
   .slide{padding:16px 12px 60px}
