@@ -610,7 +610,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
     <div class="animate d4" style="margin-top:16px;display:flex;gap:20px;align-items:stretch">
       <!-- LEFT: Hub-spoke diagram -->
       <div style="flex:1.15;min-width:0;display:flex;align-items:center">
-        <svg viewBox="0 0 700 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+        <svg viewBox="0 0 700 370" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
           <defs>
             <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
             <filter id="hubGlow"><feDropShadow dx="0" dy="3" stdDeviation="10" flood-color="#6366f1" flood-opacity=".25"/></filter>
@@ -635,6 +635,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
           <path d="M378,170 C418,170 440,238 562,238" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
           <path d="M378,170 C420,170 440,272 562,272" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
           <path d="M378,170 C420,170 440,306 562,306" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C420,170 440,340 562,340" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5,4" opacity=".8"/>
 
           <!-- Center hub rings -->
           <circle cx="330" cy="170" r="62" fill="none" stroke="rgba(99,102,241,.04)" stroke-width="8"/>
@@ -713,6 +714,10 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
           <rect x="562" y="291" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
           <text class="en" x="627" y="311" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🔌 Integrations</text>
           <text class="ru" x="627" y="311" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🔌 Интеграции</text>
+
+          <rect x="562" y="325" width="130" height="30" rx="10" fill="#faf5ff" stroke="#a78bfa" stroke-width="1.5"/>
+          <text class="en" x="627" y="345" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#7c3aed">🤖 AI Agents</text>
+          <text class="ru" x="627" y="345" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#7c3aed">🤖 AI-агенты</text>
         </svg>
       </div>
       <!-- RIGHT: 4 value cards (2×2 grid) -->
@@ -853,7 +858,18 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
             <div style="font-size:12px;font-weight:600;color:#6b7280;margin-top:4px"><span class="en">Revenue 2025</span><span class="ru">Выручка 2025</span></div>
           </div>
         </div>
-        <div style="display:flex;gap:10px;margin-top:14px">
+        <!-- Run Rate highlight -->
+        <div style="margin-top:12px;padding:12px 16px;background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(16,185,129,.02));border:1.5px solid rgba(16,185,129,.25);border-radius:14px;display:flex;align-items:center;gap:16px">
+          <div>
+            <div style="font-size:30px;font-weight:900;color:#10b981;letter-spacing:-1px">$648K</div>
+            <div style="font-size:10px;color:#6b7280;font-weight:600;margin-top:1px"><span class="en">Run Rate</span><span class="ru">Темп роста</span> · MRR $54K × 12</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:12px;font-weight:700;color:#10b981">+36%</div>
+            <div style="font-size:9px;color:#9ca3af;font-weight:600"><span class="en">vs ARR $475K</span><span class="ru">отн. ARR $475K</span></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:10px">
           <span class="tag green" style="font-size:12px;padding:7px 14px"><span class="en">2× YoY — 3 Years Straight</span><span class="ru">Удвоение каждый год — 3 года подряд</span></span>
           <span class="tag green" style="font-size:12px;padding:7px 14px"><span class="en">Profitable</span><span class="ru">В прибыли</span></span>
         </div>
@@ -1072,8 +1088,8 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
         </div>
         <!-- ARPU -->
         <div style="margin-top:10px;padding:12px 16px;background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(139,92,246,.03));border:1.5px solid rgba(99,102,241,.15);border-radius:12px;display:flex;align-items:center;gap:12px">
-          <div style="font-size:28px;font-weight:900;color:#6366f1;letter-spacing:-1px">~$158</div>
-          <div><div style="font-size:13px;font-weight:700;color:#1a1a2e"><span class="en">avg ARPU / month</span><span class="ru">средний ARPU / мес</span></div><div style="font-size:10px;color:#9ca3af">$475K / 250 / 12</div></div>
+          <div style="font-size:28px;font-weight:900;color:#6366f1;letter-spacing:-1px">$216</div>
+          <div><div style="font-size:13px;font-weight:700;color:#1a1a2e"><span class="en">avg ARPU / month</span><span class="ru">средний ARPU / мес</span></div><div style="font-size:10px;color:#9ca3af">MRR $54K / 250 brands</div></div>
         </div>
       </div>
     </div>
@@ -1116,11 +1132,21 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
         </div>
         <!-- Divider -->
         <div style="width:1px;height:60px;background:linear-gradient(180deg,transparent,#e5e7eb,transparent);margin:0 28px;flex-shrink:0"></div>
-        <!-- LTV/CAC hero -->
-        <div style="text-align:center;flex:0 0 auto">
-          <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">LTV / CAC</div>
-          <div style="font-size:56px;font-weight:900;color:#7c3aed;letter-spacing:-2px;line-height:1">~5×</div>
-          <div style="font-size:11px;color:#9ca3af;font-weight:600;margin-top:4px"><span class="en">Healthy ratio</span><span class="ru">Здоровое соотношение</span></div>
+        <!-- LTV block with regional breakdown -->
+        <div style="text-align:center;flex:0 0 auto;min-width:155px">
+          <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">LTV</div>
+          <div style="font-size:48px;font-weight:900;color:#7c3aed;letter-spacing:-2px;line-height:1">$2,808</div>
+          <div style="font-size:13px;font-weight:700;color:#6366f1;margin-top:6px">LTV / CAC ~5×</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:3px;text-align:left">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:3px 8px;background:#f5f3ff;border-radius:6px">
+              <span style="font-weight:600;color:#6b7280">🇺🇿 UZ · 🇰🇿 KZ</span>
+              <span style="font-weight:700;color:#6366f1">~13 <span class="en">mo</span><span class="ru">мес</span></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;padding:3px 8px;background:#fffbeb;border-radius:6px">
+              <span style="font-weight:600;color:#6b7280">🇬🇪 GE · 🇦🇿 AZ</span>
+              <span style="font-weight:700;color:#f59e0b">Early</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1136,16 +1162,16 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
         <div style="font-size:32px;font-weight:900;color:#6366f1;letter-spacing:-1px">13%</div>
         <div style="font-size:11px;font-weight:600;color:#6b7280;margin-top:4px"><span class="en">Conversion</span><span class="ru">Конверсия</span></div>
       </div>
-      <!-- CAC Trending -->
-      <div style="text-align:center;padding:20px 14px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:16px">
-        <div style="font-size:20px;font-weight:800;color:#10b981">↓ CAC</div>
-        <div style="font-size:11px;font-weight:600;color:#6b7280;margin-top:6px"><span class="en">Organic growth + referrals</span><span class="ru">Органика + сарафан</span></div>
+      <!-- NRR Hero -->
+      <div style="text-align:center;padding:16px 14px;background:linear-gradient(135deg,#ecfdf5,#f0fdf4);border:2px solid #10b981;border-radius:16px">
+        <div style="font-size:34px;font-weight:900;color:#10b981;letter-spacing:-1px">99%</div>
+        <div style="font-size:12px;font-weight:700;color:#10b981;margin-top:2px">NRR</div>
+        <div style="font-size:9px;font-weight:600;color:#6b7280;margin-top:3px"><span class="en">Net Revenue Retention</span><span class="ru">Удержание выручки</span></div>
       </div>
       <!-- MRR Churn -->
       <div style="text-align:center;padding:20px 14px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:16px">
         <div style="font-size:32px;font-weight:900;color:#10b981;letter-spacing:-1px">1%</div>
         <div style="font-size:11px;font-weight:600;color:#6b7280;margin-top:4px">MRR Churn</div>
-        <div style="font-size:10px;font-weight:700;color:#10b981;margin-top:2px">99% NRR</div>
       </div>
       <!-- Location Churn -->
       <div style="text-align:center;padding:20px 14px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:16px">
@@ -1200,6 +1226,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
         <div style="margin-top:12px;display:flex;flex-direction:column;gap:4px;align-items:center">
           <span style="font-size:9px;padding:3px 8px;background:rgba(99,102,241,.08);border:1px solid #a78bfa;border-radius:5px;color:#6366f1;font-weight:600"><span class="en">MENA markets</span><span class="ru">Рынки MENA</span></span>
           <span style="font-size:9px;padding:3px 8px;background:rgba(99,102,241,.08);border:1px solid #a78bfa;border-radius:5px;color:#6366f1;font-weight:600"><span class="en">ARPU growth</span><span class="ru">Рост ARPU</span></span>
+          <span style="font-size:9px;padding:3px 8px;background:rgba(124,58,237,.1);border:1px solid #a78bfa;border-radius:5px;color:#7c3aed;font-weight:600">🤖 AI Agents Layer</span>
         </div>
       </div>
       <!-- Arrow -->
@@ -1369,14 +1396,14 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
 <div class="slide" data-slide="12">
   <div class="slide-content">
     <div class="section-label animate d1"><span class="en">The Round</span><span class="ru">Раунд</span></div>
-    <h2 class="animate d2" style="font-size:34px"><span class="en">Raising to accelerate growth</span><span class="ru">Привлекаем капитал для ускорения роста</span></h2>
+    <h2 class="animate d2" style="font-size:34px"><span class="en">Asking to accelerate growth</span><span class="ru">Привлекаем капитал для ускорения роста</span></h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:28px">
       <!-- LEFT: Deal terms -->
       <div class="animate d3">
         <div style="background:linear-gradient(135deg,rgba(99,102,241,.05),rgba(139,92,246,.03));border:1.5px solid rgba(99,102,241,.15);border-radius:20px;padding:32px">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
             <div>
-              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;margin-bottom:8px"><span class="en">Raising</span><span class="ru">Привлекаем</span></div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;margin-bottom:8px"><span class="en">Asking</span><span class="ru">Привлекаем</span></div>
               <div style="font-size:44px;font-weight:800;color:#6366f1;letter-spacing:-1px">$1M</div>
               <div style="font-size:13px;font-weight:600;color:#a5b4fc;margin-top:4px">SAFE</div>
             </div>
@@ -1456,7 +1483,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
       <div class="tl-item">
         <div class="tl-dot">Q3</div>
         <div class="tl-label"><span class="en">Product & Scale</span><span class="ru">Продукт и рост</span></div>
-        <div class="tl-desc"><span class="en">AI features, enterprise tier, 100+ brands</span><span class="ru">AI-функции, корпоративный тариф, 100+ брендов</span></div>
+        <div class="tl-desc"><span class="en">Integrations for new markets, enterprise tier, 100+ brands</span><span class="ru">Интеграции для новых рынков, корпоративный тариф, 100+ брендов</span></div>
       </div>
       <div class="tl-item">
         <div class="tl-dot">Q4</div>
@@ -1499,11 +1526,11 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
       <div class="animate d3">
         <p style="font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:20px">Fakhriddin Yusupov <span style="color:#9ca3af;font-weight:500">— CEO & Co-founder</span></p>
         <div style="display:flex;flex-direction:column;gap:12px">
-          <div class="contact-item"><div class="contact-icon">🔗</div><span>linkedin.com/in/fakhriddin-yusupov-821086b3</span></div>
-          <div class="contact-item"><div class="contact-icon">📞</div><span>+998 97 343 6397</span></div>
-          <div class="contact-item"><div class="contact-icon">💬</div><span>@fakhrid</span></div>
-          <div class="contact-item"><div class="contact-icon">✉️</div><span>fyusupov@delever.uz</span></div>
-          <div class="contact-item"><div class="contact-icon">🌐</div><span>delever.io</span></div>
+          <a href="https://www.linkedin.com/in/fakhriddin-yusupov-821086b3" target="_blank" rel="noopener" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">🔗</div><span>linkedin.com/in/fakhriddin-yusupov-821086b3</span></a>
+          <a href="tel:+998973436397" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">📞</div><span>+998 97 343 6397</span></a>
+          <a href="https://t.me/fakhrid" target="_blank" rel="noopener" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">💬</div><span>@fakhrid</span></a>
+          <a href="mailto:fyusupov@delever.uz" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">✉️</div><span>fyusupov@delever.uz</span></a>
+          <a href="https://delever.io" target="_blank" rel="noopener" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">🌐</div><span>delever.io</span></a>
         </div>
         <div style="margin-top:28px">
           <div style="font-size:26px;font-weight:800;letter-spacing:-1px;color:#0f0f1a">Delever</div>
