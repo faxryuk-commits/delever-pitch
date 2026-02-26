@@ -244,6 +244,8 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
 /* ===== PDF BUTTON ===== */
 .pdf-btn{position:fixed;top:20px;right:60px;height:36px;padding:0 14px;border-radius:10px;border:1px solid #e8e8ec;background:rgba(255,255,255,.8);color:#888;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;z-index:1000;font-size:12px;font-weight:600;font-family:inherit;backdrop-filter:blur(12px);transition:all .2s}
 .pdf-btn:hover{background:#f0f0f4;color:#444}
+.onepager-btn{position:fixed;top:20px;right:118px;height:36px;padding:0 14px;border-radius:10px;border:1px solid #c7d2fe;background:rgba(99,102,241,.06);color:#6366f1;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;z-index:1000;font-size:12px;font-weight:700;font-family:inherit;backdrop-filter:blur(12px);transition:all .2s;text-decoration:none}
+.onepager-btn:hover{background:rgba(99,102,241,.12);border-color:#a5b4fc}
 
 /* ===== TIMELINE ===== */
 .round-timeline{display:flex;align-items:flex-start;gap:0;margin-top:20px;position:relative}
@@ -259,7 +261,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
 /* ===== PRINT / PDF ===== */
 @media print{
   body{overflow:visible!important;height:auto!important}
-  .nav-bar,.lang-toggle,.fullscreen-btn,.keyboard-hint,.pdf-btn,.particles-canvas{display:none!important}
+  .nav-bar,.lang-toggle,.fullscreen-btn,.keyboard-hint,.pdf-btn,.onepager-btn,.particles-canvas{display:none!important}
   .deck{width:auto;height:auto;position:static}
   .slide{
     position:relative!important;opacity:1!important;pointer-events:all!important;
@@ -318,6 +320,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
   .keyboard-hint{display:none}
   .fullscreen-btn{top:14px;right:14px}
   .pdf-btn{top:14px;right:52px}
+  .onepager-btn{top:14px;right:104px;height:30px;padding:0 10px;font-size:10px}
   .lang-toggle{top:14px;left:16px}
   .slide-number{font-size:10px;top:18px;right:20px}
   /* All grids collapse */
@@ -376,6 +379,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
   .slide-number{top:12px;right:14px;font-size:9px}
   .fullscreen-btn{top:10px;right:10px;width:30px;height:30px;font-size:12px}
   .pdf-btn{top:10px;right:44px;height:30px;padding:0 10px;font-size:11px}
+  .onepager-btn{display:none!important}
   /* Cover mockup images constrain inside container */
   .cover-mockup{display:none!important}
   /* Slide 9: smaller CAC text */
@@ -1558,6 +1562,7 @@ h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bo
   <div class="nav-btns"><button class="nav-btn" onclick="prevSlide()" title="Previous">‹</button><button class="nav-btn" onclick="nextSlide()" title="Next">›</button></div>
 </div>
 <div class="keyboard-hint"><kbd>←</kbd> <kbd>→</kbd> <span class="en">navigate</span><span class="ru">навигация</span> · <kbd>F</kbd> <span class="en">fullscreen</span><span class="ru">полный экран</span></div>
+<a href="onepager.html" class="onepager-btn" title="One-Pager">📋 One-Pager</a>
 <button class="pdf-btn" onclick="window.print()" title="Export PDF">📄 PDF</button>
 <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
 

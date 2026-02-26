@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delever — One-Pager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f3f4f6;color:#1a1a2e;display:flex;justify-content:center;padding:24px}
+body.lang-en .ru{display:none!important}
+body.lang-ru .en{display:none!important}
+
+.page{
+  width:794px;min-height:1123px;max-height:1123px;
+  background:#fff;border-radius:4px;
+  box-shadow:0 4px 40px rgba(0,0,0,.08);
+  padding:32px 36px 28px;
+  display:flex;flex-direction:column;
+  overflow:hidden;position:relative;
+}
+
+/* ---------- TOOLBAR ---------- */
+.toolbar{
+  position:fixed;top:16px;right:16px;z-index:100;
+  display:flex;gap:8px;align-items:center;
+}
+.toolbar button,.toolbar a{
+  padding:7px 14px;font-size:12px;font-weight:700;
+  border:1px solid #e5e7eb;border-radius:10px;background:#fff;
+  color:#6b7280;cursor:pointer;font-family:inherit;
+  text-decoration:none;transition:all .15s;display:inline-flex;align-items:center;gap:5px;
+}
+.toolbar button:hover,.toolbar a:hover{background:#f9fafb;border-color:#d1d5db}
+.toolbar button.active{background:#6366f1;color:#fff;border-color:#6366f1}
+
+/* ---------- HEADER ---------- */
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:2px solid #6366f1}
+.header-left{display:flex;align-items:center;gap:14px}
+.logo-mark{width:40px;height:40px;background:#152b45;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:24px;height:24px}
+.company-name{font-size:22px;font-weight:900;letter-spacing:-0.5px;color:#1a1a2e}
+.tagline{font-size:10px;color:#6b7280;font-weight:500;margin-top:2px;max-width:320px;line-height:1.3}
+.header-badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.badge{font-size:9px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.badge-indigo{background:rgba(99,102,241,.08);color:#6366f1;border:1px solid rgba(99,102,241,.2)}
+.badge-green{background:rgba(16,185,129,.08);color:#10b981;border:1px solid rgba(16,185,129,.2)}
+
+/* ---------- GRID ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1}
+.section{padding:12px 14px;border:1px solid #ebebef;border-radius:12px;background:#fafafa;overflow:hidden}
+.section-title{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af;margin-bottom:8px}
+.section-title-accent{color:#6366f1}
+.full-width{grid-column:1/-1}
+
+/* ---------- PROBLEM ---------- */
+.problem-stats{display:flex;gap:8px}
+.problem-card{flex:1;text-align:center;padding:8px 6px;background:#fff;border:1px solid #fecaca;border-radius:8px}
+.problem-card .num{font-size:18px;font-weight:900;color:#ef4444;letter-spacing:-0.5px}
+.problem-card .lbl{font-size:8px;font-weight:600;color:#6b7280;margin-top:2px;line-height:1.2}
+.problem-note{font-size:8px;color:#9ca3af;margin-top:6px;line-height:1.3;font-style:italic}
+
+/* ---------- SOLUTION ---------- */
+.solution-flow{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.sol-col{display:flex;flex-direction:column;gap:3px}
+.sol-node{font-size:7.5px;font-weight:600;padding:2.5px 6px;background:#fff;border:1px solid #e8e8f0;border-radius:5px;color:#4b5563;white-space:nowrap}
+.sol-hub{width:52px;height:52px;border-radius:50%;background:#152b45;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 12px rgba(99,102,241,.2)}
+.sol-hub svg{width:30px;height:30px}
+.sol-arrow{font-size:14px;color:#c7d2fe;flex-shrink:0}
+.sol-results{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.sol-result{text-align:center;padding:4px 2px;background:#fff;border:1px solid #bbf7d0;border-radius:6px}
+.sol-result .num{font-size:13px;font-weight:900;color:#10b981;letter-spacing:-0.5px}
+.sol-result .lbl{font-size:7px;font-weight:600;color:#6b7280;margin-top:1px}
+
+/* ---------- TRACTION ---------- */
+.traction-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.t-card{text-align:center;padding:6px 4px;background:#fff;border:1px solid #ebebef;border-radius:8px}
+.t-card .num{font-size:16px;font-weight:900;color:#6366f1;letter-spacing:-0.5px}
+.t-card .num.green{color:#10b981}
+.t-card .lbl{font-size:7.5px;font-weight:600;color:#6b7280;margin-top:1px}
+.rev-chart{display:flex;align-items:flex-end;gap:0;height:60px;padding:0 4px}
+.rev-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.rev-bar{width:32px;border-radius:4px 4px 2px 2px}
+.rev-bar-label{font-size:8px;font-weight:800;letter-spacing:-0.3px}
+.rev-bar-year{font-size:7.5px;font-weight:700;color:#6b7280}
+.rev-multiplier{flex:0 0 20px;display:flex;align-items:center;justify-content:center;padding-bottom:30px}
+.rev-multiplier span{font-size:8px;font-weight:700;color:#10b981;background:#ecfdf5;border-radius:4px;padding:2px 5px}
+.runrate-bar{margin-top:6px;padding:6px 10px;background:linear-gradient(135deg,rgba(16,185,129,.06),rgba(16,185,129,.02));border:1px solid rgba(16,185,129,.2);border-radius:8px;display:flex;align-items:center;justify-content:space-between}
+.runrate-bar .num{font-size:16px;font-weight:900;color:#10b981;letter-spacing:-0.5px}
+.runrate-bar .meta{font-size:8px;color:#6b7280;font-weight:600}
+.runrate-bar .pct{font-size:10px;font-weight:700;color:#10b981}
+
+/* ---------- MARKET ---------- */
+.tam-row{display:flex;gap:6px;margin-bottom:6px}
+.tam-card{flex:1;text-align:center;padding:8px 4px;border-radius:8px;background:#fff;border:1px solid #ebebef}
+.tam-card .num{font-size:16px;font-weight:900;letter-spacing:-0.5px}
+.tam-card .lbl{font-size:7.5px;font-weight:700;color:#6b7280;margin-top:1px}
+.tam-card.tam .num{color:#c7d2fe} .tam-card.sam .num{color:#818cf8} .tam-card.som .num{color:#6366f1}
+.arpu-row{display:flex;align-items:center;gap:8px;padding:6px 10px;background:linear-gradient(135deg,rgba(99,102,241,.05),rgba(139,92,246,.02));border:1px solid rgba(99,102,241,.12);border-radius:8px;margin-bottom:6px}
+.arpu-row .num{font-size:18px;font-weight:900;color:#6366f1;letter-spacing:-0.5px}
+.arpu-row .meta{font-size:8px;color:#6b7280;font-weight:600;line-height:1.3}
+.biz-model{display:flex;flex-wrap:wrap;gap:4px}
+.biz-tag{font-size:7px;font-weight:700;padding:2px 6px;background:#fff;border:1px solid #e5e7eb;border-radius:4px;color:#6b7280}
+
+/* ---------- UNIT ECONOMICS ---------- */
+.ue-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:6px}
+.ue-card{text-align:center;padding:7px 4px;background:#fff;border:1px solid #ebebef;border-radius:8px}
+.ue-card .num{font-size:16px;font-weight:900;letter-spacing:-0.5px}
+.ue-card .num.indigo{color:#6366f1} .ue-card .num.green{color:#10b981} .ue-card .num.purple{color:#7c3aed}
+.ue-card .lbl{font-size:7.5px;font-weight:600;color:#6b7280;margin-top:1px}
+.ue-card .sub{font-size:7px;color:#9ca3af;margin-top:1px}
+.ltv-region{display:flex;gap:4px;margin-top:4px}
+.ltv-region-card{flex:1;font-size:7.5px;padding:3px 6px;background:#f5f3ff;border-radius:5px;display:flex;justify-content:space-between;align-items:center}
+.ltv-region-card .flag{font-weight:600;color:#6b7280}
+.ltv-region-card .val{font-weight:700;color:#6366f1}
+.ltv-region-card.early .val{color:#f59e0b}
+.ltv-region-card.early{background:#fffbeb}
+
+/* ---------- THE ASK ---------- */
+.ask-hero{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+.ask-hero .amount{font-size:28px;font-weight:900;color:#6366f1;letter-spacing:-1px}
+.ask-hero .terms{font-size:9px;color:#6b7280;font-weight:600;line-height:1.4}
+.ask-terms{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:8px}
+.ask-term{text-align:center;padding:6px 4px;background:#fff;border:1px solid #ebebef;border-radius:8px}
+.ask-term .num{font-size:14px;font-weight:900;color:#6366f1;letter-spacing:-0.3px}
+.ask-term .lbl{font-size:7px;font-weight:600;color:#6b7280;margin-top:1px}
+.funds-row{display:flex;gap:4px;margin-bottom:6px}
+.fund-item{flex:1;text-align:center;padding:5px 4px;border-radius:6px}
+.fund-item .pct{font-size:13px;font-weight:900;color:#6366f1}
+.fund-item .lbl{font-size:7px;font-weight:600;color:#6b7280;margin-top:1px}
+.fund-item:nth-child(1){background:rgba(99,102,241,.08)} .fund-item:nth-child(2){background:rgba(99,102,241,.06)} .fund-item:nth-child(3){background:rgba(99,102,241,.04)} .fund-item:nth-child(4){background:rgba(99,102,241,.02)}
+.highlights{display:flex;flex-wrap:wrap;gap:4px}
+.highlight-tag{font-size:7.5px;font-weight:700;padding:3px 7px;background:#ecfdf5;border:1px solid #bbf7d0;border-radius:5px;color:#10b981}
+
+/* ---------- TEAM ---------- */
+.team-row{display:flex;gap:8px}
+.team-member{flex:1;display:flex;gap:6px;align-items:flex-start}
+.team-avatar{width:28px;height:28px;border-radius:8px;background:#6366f1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.team-info .name{font-size:9px;font-weight:800;color:#1a1a2e}
+.team-info .role{font-size:7.5px;font-weight:600;color:#6366f1}
+.team-info .bg{font-size:7px;color:#9ca3af;margin-top:1px;line-height:1.2}
+.team-extra{margin-top:8px;display:flex;gap:8px}
+.team-extra-item{font-size:7.5px;color:#6b7280;font-weight:600}
+.team-extra-item strong{color:#1a1a2e}
+
+/* ---------- CONTACT ---------- */
+.contact-row{display:flex;align-items:center;gap:12px}
+.contact-details{flex:1}
+.contact-details .c-name{font-size:11px;font-weight:800;color:#1a1a2e}
+.contact-details .c-role{font-size:8px;font-weight:600;color:#6366f1;margin-bottom:4px}
+.contact-line{font-size:8px;color:#6b7280;margin-bottom:2px;display:flex;align-items:center;gap:4px}
+.contact-line a{color:#6366f1;text-decoration:none;font-weight:600}
+.contact-line a:hover{text-decoration:underline}
+.qr-wrap{width:72px;height:72px;border:1px solid #ebebef;border-radius:8px;overflow:hidden;flex-shrink:0}
+.qr-wrap canvas{width:100%!important;height:100%!important}
+.pitch-link{margin-top:6px;font-size:7.5px;color:#9ca3af}
+.pitch-link a{color:#6366f1;font-weight:700;text-decoration:none}
+
+/* ---------- FOOTER ---------- */
+.footer{margin-top:auto;padding-top:8px;border-top:1px solid #f0f0f0;display:flex;justify-content:space-between;align-items:center}
+.footer-left{font-size:7px;color:#c0c0c8}
+.footer-right{font-size:7px;color:#c0c0c8}
+
+/* ---------- PRINT ---------- */
+@media print{
+  body{background:#fff;padding:0;margin:0}
+  .toolbar{display:none!important}
+  .page{box-shadow:none;border-radius:0;width:100%;min-height:auto;max-height:none;padding:24px 28px 20px}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body class="lang-en">
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <button onclick="toggleLang('en')" id="btn-en" class="active">EN</button>
+  <button onclick="toggleLang('ru')" id="btn-ru">RU</button>
+  <button onclick="window.print()">📄 <span class="en">Download PDF</span><span class="ru">Скачать PDF</span></button>
+  <a href="index.html"><span class="en">Full Pitch →</span><span class="ru">Полный питч →</span></a>
+</div>
+
+<div class="page">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <svg viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M305.99,149.65h-164.8l-7.55,43.01h172.71l7.18,29.47h-185.05l-4.14,23.58h153.12l7.18,29.47H119.27l-4.14,23.58h131.57l7.18,29.47H109.98l-7.55,43.01h203.55c60.96,0,110.52-49.71,110.52-110.84s-49.56-110.84-110.52-110.84v.07Z" fill="url(#logoGrad)"/>
+          <defs><linearGradient id="logoGrad" x1="100" y1="150" x2="420" y2="370"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+        </svg>
+      </div>
+      <div>
+        <div class="company-name">Delever</div>
+        <div class="tagline"><span class="en">Order & delivery management platform to grow restaurant revenue</span><span class="ru">Платформа управления заказами и доставкой для роста выручки ресторанов</span></div>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span class="badge badge-indigo">250+ <span class="en">brands</span><span class="ru">брендов</span></span>
+      <span class="badge badge-indigo">1,200+ <span class="en">locations</span><span class="ru">заведений</span></span>
+      <span class="badge badge-green">$475K rev '25</span>
+      <span class="badge badge-indigo"><span class="en">5 markets</span><span class="ru">5 рынков</span></span>
+      <span class="badge badge-green"><span class="en">Profitable</span><span class="ru">Прибыльный</span></span>
+    </div>
+  </div>
+
+  <!-- ===== GRID ===== -->
+  <div class="grid">
+
+    <!-- PROBLEM -->
+    <div class="section">
+      <div class="section-title"><span class="en">Problem</span><span class="ru">Проблема</span></div>
+      <div class="problem-stats">
+        <div class="problem-card">
+          <div class="num">~3 <span style="font-size:11px"><span class="en">min</span><span class="ru">мин</span></span></div>
+          <div class="lbl"><span class="en">manual order processing</span><span class="ru">ручная обработка заказа</span></div>
+        </div>
+        <div class="problem-card">
+          <div class="num">18%</div>
+          <div class="lbl"><span class="en">orders lost w/o automation</span><span class="ru">заказов теряется без автоматизации</span></div>
+        </div>
+        <div class="problem-card">
+          <div class="num">40%</div>
+          <div class="lbl"><span class="en">revenue to aggregators</span><span class="ru">выручки уходит агрегаторам</span></div>
+        </div>
+      </div>
+      <div class="problem-note"><span class="en">Restaurants not going online lose 22–25% of potential revenue. Growth creates chaos — most can't scale.</span><span class="ru">Рестораны без онлайн-присутствия теряют 22–25% выручки. Рост создаёт хаос — масштабироваться не получается.</span></div>
+    </div>
+
+    <!-- SOLUTION -->
+    <div class="section">
+      <div class="section-title"><span class="en">Solution</span><span class="ru">Решение</span></div>
+      <div class="solution-flow">
+        <div class="sol-col">
+          <div class="sol-node"><span class="en">Aggregators</span><span class="ru">Агрегаторы</span></div>
+          <div class="sol-node"><span class="en">Website</span><span class="ru">Сайт</span></div>
+          <div class="sol-node">Telegram</div>
+          <div class="sol-node"><span class="en">Mobile App</span><span class="ru">Приложение</span></div>
+          <div class="sol-node">QR / <span class="en">Kiosk</span><span class="ru">Киоск</span></div>
+          <div class="sol-node"><span class="en">Direct</span><span class="ru">Звонки</span></div>
+        </div>
+        <div class="sol-arrow">→</div>
+        <div class="sol-hub">
+          <svg viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M305.99,149.65h-164.8l-7.55,43.01h172.71l7.18,29.47h-185.05l-4.14,23.58h153.12l7.18,29.47H119.27l-4.14,23.58h131.57l7.18,29.47H109.98l-7.55,43.01h203.55c60.96,0,110.52-49.71,110.52-110.84s-49.56-110.84-110.52-110.84v.07Z" fill="url(#logoGrad2)"/>
+            <defs><linearGradient id="logoGrad2" x1="100" y1="150" x2="420" y2="370"><stop stop-color="#a78bfa"/><stop offset="1" stop-color="#fff"/></linearGradient></defs>
+          </svg>
+        </div>
+        <div class="sol-arrow">→</div>
+        <div class="sol-col">
+          <div class="sol-node">POS / <span class="en">Kitchen</span><span class="ru">Кухня</span></div>
+          <div class="sol-node"><span class="en">Dispatch</span><span class="ru">Диспетчеризация</span></div>
+          <div class="sol-node"><span class="en">Payments</span><span class="ru">Платежи</span></div>
+          <div class="sol-node"><span class="en">Marketing</span><span class="ru">Маркетинг</span></div>
+          <div class="sol-node"><span class="en">Analytics</span><span class="ru">Аналитика</span></div>
+          <div class="sol-node" style="border-color:#a78bfa;color:#7c3aed">🤖 AI Agents</div>
+        </div>
+      </div>
+      <div class="sol-results">
+        <div class="sol-result"><div class="num">5.5×</div><div class="lbl"><span class="en">Revenue</span><span class="ru">Выручка</span></div></div>
+        <div class="sol-result"><div class="num">90→35</div><div class="lbl"><span class="en">min delivery</span><span class="ru">мин доставка</span></div></div>
+        <div class="sol-result"><div class="num">+30%</div><div class="lbl"><span class="en">avg check</span><span class="ru">средний чек</span></div></div>
+        <div class="sol-result"><div class="num">0%</div><div class="lbl"><span class="en">errors</span><span class="ru">ошибок</span></div></div>
+      </div>
+    </div>
+
+    <!-- TRACTION -->
+    <div class="section">
+      <div class="section-title"><span class="en">Traction</span><span class="ru">Динамика</span></div>
+      <div class="traction-metrics">
+        <div class="t-card"><div class="num">250+</div><div class="lbl"><span class="en">Paying Brands</span><span class="ru">Платящих брендов</span></div></div>
+        <div class="t-card"><div class="num">1,200+</div><div class="lbl"><span class="en">Locations</span><span class="ru">Заведений</span></div></div>
+        <div class="t-card"><div class="num">6.8M</div><div class="lbl"><span class="en">Orders '25</span><span class="ru">Заказов '25</span></div></div>
+      </div>
+      <div class="rev-chart">
+        <div class="rev-bar-wrap">
+          <div class="rev-bar-label" style="color:#818cf8">$116K</div>
+          <div class="rev-bar" style="height:20px;background:linear-gradient(180deg,#a5b4fc,#818cf8)"></div>
+          <div class="rev-bar-year">2023</div>
+        </div>
+        <div class="rev-multiplier"><span>2×</span></div>
+        <div class="rev-bar-wrap">
+          <div class="rev-bar-label" style="color:#6366f1">$234K</div>
+          <div class="rev-bar" style="height:36px;background:linear-gradient(180deg,#818cf8,#6366f1)"></div>
+          <div class="rev-bar-year">2024</div>
+        </div>
+        <div class="rev-multiplier"><span>2×</span></div>
+        <div class="rev-bar-wrap">
+          <div class="rev-bar-label" style="color:#7c3aed;font-size:9px">$475K</div>
+          <div class="rev-bar" style="height:55px;background:linear-gradient(180deg,#8b5cf6,#7c3aed);box-shadow:0 0 10px rgba(124,58,237,.2)"></div>
+          <div class="rev-bar-year">2025</div>
+        </div>
+      </div>
+      <div class="runrate-bar">
+        <div>
+          <div class="num">$648K</div>
+          <div class="meta">Run Rate · MRR $54K × 12</div>
+        </div>
+        <div style="text-align:right">
+          <div class="pct">+36%</div>
+          <div class="meta">vs ARR $475K</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARKET -->
+    <div class="section">
+      <div class="section-title"><span class="en">Market & Business Model</span><span class="ru">Рынок и бизнес-модель</span></div>
+      <div class="tam-row">
+        <div class="tam-card tam"><div class="num">$2.2B</div><div class="lbl">TAM</div></div>
+        <div class="tam-card sam"><div class="num">$200M</div><div class="lbl">SAM</div></div>
+        <div class="tam-card som"><div class="num">$15M</div><div class="lbl">SOM</div></div>
+      </div>
+      <div class="arpu-row">
+        <div class="num">$216</div>
+        <div class="meta"><span class="en">avg ARPU / month</span><span class="ru">средний ARPU / мес</span><br>MRR $54K / 250 brands</div>
+      </div>
+      <div class="biz-model">
+        <span class="biz-tag">SaaS <span class="en">subscription</span><span class="ru">подписка</span></span>
+        <span class="biz-tag"><span class="en">Per location</span><span class="ru">За точку</span></span>
+        <span class="biz-tag"><span class="en">Transaction fee</span><span class="ru">Комиссия</span></span>
+        <span class="biz-tag"><span class="en">Add-ons</span><span class="ru">Доп. модули</span></span>
+        <span class="biz-tag">API <span class="en">monetization</span><span class="ru">монетизация</span></span>
+      </div>
+      <div style="font-size:6px;color:#c0c0c8;margin-top:4px">Source: Grand View Research, 2025 · CAGR 16.7%</div>
+    </div>
+
+    <!-- UNIT ECONOMICS -->
+    <div class="section">
+      <div class="section-title"><span class="en">Unit Economics</span><span class="ru">Юнит-экономика</span></div>
+      <div class="ue-grid">
+        <div class="ue-card"><div class="num indigo">$533</div><div class="lbl">CAC</div><div class="sub">−56% <span class="en">from</span><span class="ru">от</span> $1,200</div></div>
+        <div class="ue-card"><div class="num purple">$2,808</div><div class="lbl">LTV</div><div class="sub">$216 × 13 <span class="en">mo</span><span class="ru">мес</span></div></div>
+        <div class="ue-card"><div class="num purple">~5×</div><div class="lbl">LTV / CAC</div></div>
+      </div>
+      <div class="ue-grid">
+        <div class="ue-card" style="background:#ecfdf5;border-color:#bbf7d0"><div class="num green">99%</div><div class="lbl">NRR</div></div>
+        <div class="ue-card" style="background:#ecfdf5;border-color:#bbf7d0"><div class="num green">1%</div><div class="lbl">MRR Churn</div></div>
+        <div class="ue-card"><div class="num indigo">13%</div><div class="lbl"><span class="en">Conversion</span><span class="ru">Конверсия</span></div></div>
+      </div>
+      <div class="ltv-region">
+        <div class="ltv-region-card"><span class="flag">🇺🇿 UZ · 🇰🇿 KZ</span><span class="val">~13 <span class="en">mo</span><span class="ru">мес</span></span></div>
+        <div class="ltv-region-card early"><span class="flag">🇬🇪 GE · 🇦🇿 AZ</span><span class="val">Early</span></div>
+      </div>
+    </div>
+
+    <!-- THE ASK -->
+    <div class="section">
+      <div class="section-title section-title-accent"><span class="en">The Ask</span><span class="ru">Привлекаем</span></div>
+      <div class="ask-hero">
+        <div class="amount">$1M</div>
+        <div class="terms">SAFE · $20M <span class="en">pre-money</span><span class="ru">пре-мани</span> · ~5% <span class="en">dilution</span><span class="ru">размытие</span></div>
+      </div>
+      <div class="ask-terms">
+        <div class="ask-term"><div class="num">18 <span style="font-size:9px"><span class="en">mo</span><span class="ru">мес</span></span></div><div class="lbl"><span class="en">to Series A</span><span class="ru">до Series A</span></div></div>
+        <div class="ask-term"><div class="num">$1M+</div><div class="lbl">ARR <span class="en">target</span><span class="ru">цель</span></div></div>
+        <div class="ask-term"><div class="num">50</div><div class="lbl"><span class="en">brands post-round</span><span class="ru">брендов/мес</span></div></div>
+      </div>
+      <div class="funds-row">
+        <div class="fund-item"><div class="pct">40%</div><div class="lbl"><span class="en">Sales</span><span class="ru">Продажи</span></div></div>
+        <div class="fund-item"><div class="pct">30%</div><div class="lbl"><span class="en">Marketing</span><span class="ru">Маркетинг</span></div></div>
+        <div class="fund-item"><div class="pct">20%</div><div class="lbl"><span class="en">Product</span><span class="ru">Продукт</span></div></div>
+        <div class="fund-item"><div class="pct">10%</div><div class="lbl"><span class="en">Legal</span><span class="ru">Юр.</span></div></div>
+      </div>
+      <div class="highlights">
+        <span class="highlight-tag"><span class="en">2× YoY 3 years</span><span class="ru">2× рост 3 года</span></span>
+        <span class="highlight-tag">5× LTV/CAC</span>
+        <span class="highlight-tag">40+ <span class="en">integrations</span><span class="ru">интеграций</span></span>
+        <span class="highlight-tag">#1 <span class="en">in Central Asia</span><span class="ru">в ЦА</span></span>
+      </div>
+    </div>
+
+    <!-- TEAM + CONTACT (full width) -->
+    <div class="section full-width" style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <!-- TEAM -->
+      <div>
+        <div class="section-title"><span class="en">Team</span><span class="ru">Команда</span></div>
+        <div class="team-row">
+          <div class="team-member">
+            <div class="team-avatar">FY</div>
+            <div class="team-info">
+              <div class="name">Fakhriddin Yusupov</div>
+              <div class="role">CEO & Founder</div>
+              <div class="bg"><span class="en">15yr HoReCa & foodtech. Ex-CEO MaxWay (5.5× rev). MBA, DBA</span><span class="ru">15 лет HoReCa и foodtech. Экс-CEO MaxWay (5.5× выручка). MBA, DBA</span></div>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">AB</div>
+            <div class="team-info">
+              <div class="name">Azizbek Bakhodirov</div>
+              <div class="role">COO & Co-founder</div>
+              <div class="bg"><span class="en">Ex-Express24. 7yr ops & teams at Udevs</span><span class="ru">Экс-Express24. 7 лет управления в Udevs</span></div>
+            </div>
+          </div>
+          <div class="team-member">
+            <div class="team-avatar">AK</div>
+            <div class="team-info">
+              <div class="name">Abdullo Khidoyatov</div>
+              <div class="role">CTO & Co-founder</div>
+              <div class="bg"><span class="en">Ex-MyTaxi. 7yr engineering lead at Udevs</span><span class="ru">Экс-MyTaxi. 7 лет тех. лидерства в Udevs</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="team-extra">
+          <div class="team-extra-item"><strong>Adviser:</strong> Madiyar Bakbergenov — Ex-Kwaaka, Chocofood</div>
+          <div class="team-extra-item"><strong>Investor:</strong> Aloqa Ventures</div>
+        </div>
+      </div>
+      <!-- CONTACT -->
+      <div>
+        <div class="section-title"><span class="en">Contact</span><span class="ru">Контакт</span></div>
+        <div class="contact-row">
+          <div class="contact-details">
+            <div class="c-name">Fakhriddin Yusupov</div>
+            <div class="c-role">CEO & Co-founder</div>
+            <div class="contact-line">📞 <a href="tel:+998973436397">+998 97 343 6397</a></div>
+            <div class="contact-line">💬 <a href="https://t.me/fakhrid" target="_blank">@fakhrid</a></div>
+            <div class="contact-line">✉️ <a href="mailto:fyusupov@delever.uz">fyusupov@delever.uz</a></div>
+            <div class="contact-line">🔗 <a href="https://www.linkedin.com/in/fakhriddin-yusupov-821086b3" target="_blank">LinkedIn</a></div>
+            <div class="contact-line">🌐 <a href="https://delever.io" target="_blank">delever.io</a></div>
+            <div class="pitch-link"><span class="en">Full pitch:</span><span class="ru">Полный питч:</span> <a href="https://delever-pitch-five.vercel.app" target="_blank">delever-pitch-five.vercel.app</a></div>
+          </div>
+          <div class="qr-wrap" id="qr-container"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">Delever © 2026 · Investor One-Pager</div>
+    <div class="footer-right"><span class="en">Confidential</span><span class="ru">Конфиденциально</span></div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+function toggleLang(lang){
+  document.body.className='lang-'+lang;
+  document.getElementById('btn-en').classList.toggle('active',lang==='en');
+  document.getElementById('btn-ru').classList.toggle('active',lang==='ru');
+}
+
+(function generateQR(){
+  try{
+    if(typeof qrcode==='undefined')return;
+    var qr=qrcode(0,'M');
+    qr.addData('https://delever-pitch-five.vercel.app');
+    qr.make();
+    var container=document.getElementById('qr-container');
+    if(container){
+      container.innerHTML=qr.createSvgTag({cellSize:2,margin:2});
+      var svg=container.querySelector('svg');
+      if(svg){svg.style.width='100%';svg.style.height='100%'}
+    }
+  }catch(e){console.warn('QR generation failed:',e)}
+})();
+</script>
+</body>
+</html>
