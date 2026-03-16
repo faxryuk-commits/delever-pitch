@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Delever — Платформа для цифрового роста ресторанов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;scroll-behavior:smooth;overflow:hidden;width:100%;max-width:100vw}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#1a1a2e;overflow:hidden;height:100vh;width:100vw;max-width:100vw;overflow-x:hidden}
+
+body.lang-en .ru{display:none!important}
+body.lang-ru .en{display:none!important}
+
+.lang-toggle{position:fixed;top:20px;left:20px;z-index:1001;display:flex;border-radius:10px;overflow:hidden;border:1px solid #e8e8ec;background:#fafafa;backdrop-filter:blur(12px)}
+.lang-toggle button{padding:6px 14px;font-size:12px;font-weight:700;border:none;background:transparent;color:#999;cursor:pointer;transition:all .2s;font-family:inherit;letter-spacing:.5px}
+.lang-toggle button.active{background:#6366f1;color:#fff}
+
+.deck{width:100vw;height:100vh;position:relative;overflow:hidden;max-width:100vw}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:60px 80px 80px;opacity:0;pointer-events:none;transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1);transform:scale(.98) translateY(10px);overflow-y:auto;overflow-x:hidden;background:#fff}
+.slide.active{opacity:1;pointer-events:all;transform:scale(1) translateY(0)}
+.slide::-webkit-scrollbar{width:4px}
+.slide::-webkit-scrollbar-thumb{background:rgba(0,0,0,.1);border-radius:2px}
+
+.nav-bar{position:fixed;bottom:0;left:0;right:0;height:56px;background:rgba(255,255,255,.95);backdrop-filter:blur(24px);border-top:1px solid rgba(0,0,0,.06);display:flex;align-items:center;justify-content:space-between;padding:0 32px;z-index:1000}
+.nav-bar .slide-counter{font-size:13px;color:#999;font-weight:600;letter-spacing:.5px;min-width:80px}
+.nav-bar .progress-bar{flex:1;height:4px;background:#f0f0f0;border-radius:4px;margin:0 24px;cursor:pointer;overflow:hidden}
+.nav-bar .progress-fill{height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6,#a78bfa);border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.nav-btns{display:flex;gap:6px}
+.nav-btn{width:40px;height:40px;border-radius:12px;border:1px solid #e8e8ec;background:#fafafa;color:#444;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:18px}
+.nav-btn:hover{background:#f0f0f4;border-color:#d0d0d8;transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+
+.section-label{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#6366f1;margin-bottom:16px;display:inline-flex;align-items:center;gap:8px}
+.section-label::before{content:'';width:24px;height:2px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:1px}
+.slide-number{position:absolute;top:32px;right:40px;font-size:12px;font-weight:600;color:#ccc;letter-spacing:1px}
+h1{font-size:56px;font-weight:800;line-height:1.1;letter-spacing:-2px;margin-bottom:20px;color:#0f0f1a}
+h2{font-size:42px;font-weight:800;line-height:1.15;letter-spacing:-1.2px;margin-bottom:16px;color:#0f0f1a}
+h3{font-size:28px;font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bottom:12px;color:#0f0f1a}
+.subtitle{font-size:18px;line-height:1.7;color:#6b7280;max-width:640px;font-weight:400}
+.gradient-text{background:linear-gradient(135deg,#6366f1,#8b5cf6,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.card{background:#fafafa;border:1px solid #ebebef;border-radius:20px;padding:28px;transition:all .35s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#a78bfa);opacity:0;transition:opacity .3s}
+.card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(99,102,241,.1),0 4px 12px rgba(0,0,0,.04);border-color:rgba(99,102,241,.2)}
+.card:hover::before{opacity:1}
+.card-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.08));display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:700;margin-bottom:8px;color:#1a1a2e}
+.card-desc{font-size:13px;color:#8891a5;line-height:1.6}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:100px;font-size:12px;font-weight:600;background:rgba(99,102,241,.06);color:#6366f1;border:1px solid rgba(99,102,241,.12);transition:all .2s}
+.tag:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(99,102,241,.12)}
+.tag.green{background:rgba(16,185,129,.06);color:#059669;border-color:rgba(16,185,129,.12)}
+.check-list{list-style:none;margin-top:16px}
+.check-list li{padding:8px 0;font-size:14px;color:#4b5563;display:flex;align-items:center;gap:10px}
+.check-list li::before{content:'✓';color:#10b981;font-weight:700;font-size:15px}
+.logo-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.logo-item{padding:10px 20px;background:#fafafa;border:1px solid #ebebef;border-radius:12px;font-size:13px;font-weight:600;color:#4b5563;transition:all .3s;cursor:default}
+.logo-item:hover{background:#f0f0ff;border-color:rgba(99,102,241,.2);transform:translateY(-2px);box-shadow:0 4px 12px rgba(99,102,241,.08)}
+.contact-item{display:flex;align-items:center;gap:16px;padding:14px 0;font-size:15px;color:#4b5563;transition:all .2s}
+.contact-item:hover{padding-left:8px;color:#6366f1}
+.contact-icon{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,rgba(99,102,241,.08),rgba(139,92,246,.05));display:flex;align-items:center;justify-content:center;font-size:18px}
+.particles-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+.slide-content{position:relative;z-index:1}
+
+/* Cover */
+.slide[data-slide="1"]{background:linear-gradient(160deg,#f8f8ff 0%,#fff 30%,#f5f3ff 60%,#ede9fe 100%)}
+.slide[data-slide="1"]::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.1),transparent 65%);top:-150px;right:-100px;pointer-events:none}
+.slide[data-slide="1"]::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.08),transparent 65%);bottom:-80px;left:-80px;pointer-events:none}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@keyframes coverTitleIn{from{opacity:0;transform:translateX(-40px);filter:blur(8px)}to{opacity:1;transform:translateX(0);filter:blur(0)}}
+@keyframes coverMetricsIn{from{opacity:0;transform:translateY(30px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes coverMockupIn{from{opacity:0;transform:translateX(60px) scale(.9)}to{opacity:1;transform:translateX(0) scale(1)}}
+.slide[data-slide="1"].active .cover-title{animation:coverTitleIn .9s cubic-bezier(.4,0,.2,1) .2s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-subtitle{animation:fadeInUp .8s cubic-bezier(.4,0,.2,1) .4s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-metrics{animation:coverMetricsIn .8s cubic-bezier(.4,0,.2,1) .6s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-tags{animation:fadeInUp .6s cubic-bezier(.4,0,.2,1) .8s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-mockup{animation:coverMockupIn 1s cubic-bezier(.4,0,.2,1) .4s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-mockup img:nth-child(1){animation:coverMockupIn 1s cubic-bezier(.4,0,.2,1) .5s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-mockup img:nth-child(2){animation:coverMockupIn 1s cubic-bezier(.4,0,.2,1) .65s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-mockup img:nth-child(3){animation:coverMockupIn 1s cubic-bezier(.4,0,.2,1) .8s forwards;opacity:0}
+.slide[data-slide="1"].active .cover-mockup img:nth-child(4){animation:coverMockupIn 1s cubic-bezier(.4,0,.2,1) .95s forwards;opacity:0}
+
+.slide.active .animate{animation:fadeInUp .7s cubic-bezier(.4,0,.2,1) forwards}
+.slide.active .animate-scale{animation:scaleIn .7s cubic-bezier(.4,0,.2,1) forwards}
+.slide.active .d1{animation-delay:.05s;opacity:0}
+.slide.active .d2{animation-delay:.15s;opacity:0}
+.slide.active .d3{animation-delay:.25s;opacity:0}
+.slide.active .d4{animation-delay:.35s;opacity:0}
+.slide.active .d5{animation-delay:.5s;opacity:0}
+.slide.active .d6{animation-delay:.65s;opacity:0}
+.slide.active .d7{animation-delay:.8s;opacity:0}
+
+.fullscreen-btn{position:fixed;top:20px;right:20px;width:36px;height:36px;border-radius:10px;border:1px solid #e8e8ec;background:rgba(255,255,255,.8);color:#888;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1000;font-size:14px;backdrop-filter:blur(12px);transition:all .2s}
+.fullscreen-btn:hover{background:#f0f0f4;color:#444}
+.keyboard-hint{position:fixed;bottom:68px;right:32px;font-size:11px;color:#ccc;z-index:999}
+.keyboard-hint kbd{padding:2px 7px;border:1px solid #e0e0e4;border-radius:4px;font-family:inherit;font-size:10px;background:#fafafa}
+.pdf-btn{position:fixed;top:20px;right:60px;height:36px;padding:0 14px;border-radius:10px;border:1px solid #e8e8ec;background:rgba(255,255,255,.8);color:#888;display:flex;align-items:center;justify-content:center;gap:6px;cursor:pointer;z-index:1000;font-size:12px;font-weight:600;font-family:inherit;backdrop-filter:blur(12px);transition:all .2s}
+.pdf-btn:hover{background:#f0f0f4;color:#444}
+.pitch-btn{position:fixed;top:20px;right:118px;height:36px;padding:0 14px;border-radius:10px;border:1px solid #c7d2fe;background:rgba(99,102,241,.06);color:#6366f1;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;z-index:1000;font-size:12px;font-weight:700;font-family:inherit;backdrop-filter:blur(12px);transition:all .2s;text-decoration:none}
+.pitch-btn:hover{background:rgba(99,102,241,.12);border-color:#a5b4fc}
+
+/* Team */
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:28px}
+.team-card{background:#fafafa;border:1px solid #ebebef;border-radius:24px;padding:24px;text-align:left;transition:all .4s}
+.team-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(99,102,241,.1)}
+.team-name{font-size:17px;font-weight:700;margin-bottom:4px;color:#1a1a2e}
+.team-role{font-size:12px;color:#6366f1;font-weight:700;margin-bottom:0;text-transform:uppercase;letter-spacing:1.2px}
+
+/* Channel cards */
+.channel-card{padding:24px 20px;background:#fafafa;border:1px solid #ebebef;border-radius:18px;transition:all .3s;text-align:center}
+.channel-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(99,102,241,.1);border-color:rgba(99,102,241,.2)}
+
+/* Pricing */
+.price-card{padding:32px;background:#fafafa;border:1.5px solid #ebebef;border-radius:24px;text-align:center;transition:all .35s;position:relative}
+.price-card:hover{transform:translateY(-6px);box-shadow:0 20px 48px rgba(99,102,241,.12);border-color:rgba(99,102,241,.2)}
+.price-card.popular{border-color:#6366f1;background:linear-gradient(180deg,rgba(99,102,241,.04),#fff)}
+.price-card.popular::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#6366f1,#a78bfa);border-radius:24px 24px 0 0}
+.price-badge{display:inline-block;padding:4px 12px;background:#6366f1;color:#fff;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px}
+
+/* Timeline */
+.timeline{display:flex;align-items:flex-start;gap:0;margin-top:32px;position:relative}
+.timeline::before{content:'';position:absolute;top:24px;left:0;right:0;height:3px;background:linear-gradient(90deg,#6366f1,#a78bfa,#c4b5fd,#ddd6fe);border-radius:2px}
+.tl-step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative;z-index:1;text-align:center}
+.tl-num{width:48px;height:48px;border-radius:50%;background:#fff;border:3px solid #6366f1;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#6366f1;margin-bottom:12px;box-shadow:0 4px 16px rgba(99,102,241,.15)}
+.tl-step:nth-child(2) .tl-num{border-color:#818cf8;color:#818cf8}
+.tl-step:nth-child(3) .tl-num{border-color:#a78bfa;color:#a78bfa}
+.tl-step:nth-child(4) .tl-num{border-color:#c4b5fd;color:#c4b5fd}
+
+/* Last slide bg */
+.slide[data-slide="10"]{background:linear-gradient(160deg,#fefefe 0%,#f8f8ff 50%,#f5f3ff 100%)}
+
+/* SLA metric */
+.sla-card{padding:20px;background:#fff;border:1.5px solid #ebebef;border-radius:18px;text-align:center;transition:all .3s}
+.sla-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(99,102,241,.08);border-color:rgba(99,102,241,.15)}
+.sla-value{font-size:32px;font-weight:900;letter-spacing:-1.5px;line-height:1}
+.sla-label{font-size:11px;font-weight:600;color:#6b7280;margin-top:6px}
+
+@media print{
+  body{overflow:visible!important;height:auto!important}
+  .nav-bar,.lang-toggle,.fullscreen-btn,.keyboard-hint,.pdf-btn,.pitch-btn,.particles-canvas{display:none!important}
+  .deck{width:auto;height:auto;position:static}
+  .slide{position:relative!important;opacity:1!important;pointer-events:all!important;transform:none!important;display:flex!important;page-break-after:always;break-after:page;height:100vh;width:100vw;padding:40px 60px 60px}
+  .slide .animate,.slide .cover-title,.slide .cover-subtitle,.slide .cover-metrics,.slide .cover-tags,.slide .cover-mockup,.slide .cover-mockup img{opacity:1!important;animation:none!important;transform:none!important;filter:none!important}
+}
+@media(max-width:1200px){
+  .slide{padding:40px 48px 70px}
+  h1{font-size:42px}
+  h2{font-size:28px}
+}
+@media(max-width:1024px){
+  .slide[data-slide="1"] .slide-content{grid-template-columns:1fr!important;gap:24px!important}
+  .slide[data-slide="1"] .cover-mockup{height:280px!important;overflow:hidden!important}
+}
+@media(max-width:768px){
+  .slide{padding:24px 20px 70px;overflow-x:hidden!important}
+  h1{font-size:28px;letter-spacing:-1px}
+  h2{font-size:20px}
+  .subtitle{font-size:13px}
+  .team-grid{grid-template-columns:1fr!important;gap:12px!important}
+  .nav-bar{padding:0 16px;height:48px}
+  .nav-btn{width:34px;height:34px;border-radius:10px}
+  .keyboard-hint{display:none}
+  .pitch-btn{display:none!important}
+  .slide-number{font-size:10px;top:18px;right:20px}
+  .cover-mockup{display:none!important}
+  .timeline{flex-direction:column;gap:20px;align-items:flex-start}
+  .timeline::before{display:none}
+  .tl-step{flex-direction:row;gap:16px;text-align:left;align-items:center}
+}
+@media(max-width:480px){
+  .slide{padding:20px 16px 64px}
+  h1{font-size:24px}
+  h2{font-size:18px;line-height:1.3}
+  .lang-toggle{top:10px;left:12px}
+  .slide-number{top:12px;right:14px;font-size:9px}
+  .fullscreen-btn{top:10px;right:10px;width:30px;height:30px;font-size:12px}
+  .pdf-btn{top:10px;right:44px;height:30px;padding:0 10px;font-size:11px}
+}
+</style>
+</head>
+<body class="lang-ru">
+
+<div class="lang-toggle">
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+  <button id="btnRu" class="active" onclick="setLang('ru')">RU</button>
+</div>
+
+<div class="deck">
+
+<!-- ===== SLIDE 1: HERO ===== -->
+<div class="slide active" data-slide="1">
+  <canvas class="particles-canvas" id="particles1"></canvas>
+  <div class="slide-content" style="display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;height:100%">
+    <div>
+      <div class="cover-tags" style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);border-radius:100px;margin-bottom:20px">
+        <span style="font-size:12px;font-weight:700;color:#6366f1">🏆 <span class="ru">5 лет · 1 200+ заведений · 5 стран</span><span class="en">5 years · 1,200+ locations · 5 countries</span></span>
+      </div>
+      <h1 class="cover-title" style="font-size:48px;letter-spacing:-2px;line-height:1.08;margin-bottom:16px">
+        <span class="ru">Ведущая платформа<br>для <span class="gradient-text">цифрового роста</span><br>ресторанов и ритейла</span>
+        <span class="en">Leading platform<br>for <span class="gradient-text">digital growth</span><br>of restaurants & retail</span>
+      </h1>
+      <p class="cover-subtitle subtitle" style="font-size:15px;line-height:1.65;margin-bottom:28px;max-width:480px">
+        <span class="ru">Множество каналов продаж для моментального роста. Единая система автоматизации и управления. Бесшовные интеграции с учётно-кассовыми, платёжными и курьерскими сервисами.</span>
+        <span class="en">Multiple sales channels for instant growth. Unified automation & management system. Seamless integrations with POS, payment, and courier services.</span>
+      </p>
+      <div class="cover-metrics" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px">
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">Pizza Hut</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">Hardee's</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">Dodo Pizza</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">I'M <span style="font-size:10px;color:#9ca3af">(McDonald's KZ)</span></span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">Evos</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">SUN Group</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">ABR Group</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">MIKA Group</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">Caravan Group</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">Okazaki</span>
+        <span class="logo-item" style="font-size:12px;padding:7px 14px">Hippo</span>
+      </div>
+    </div>
+    <div class="cover-mockup" style="position:relative;width:100%;height:460px">
+      <img src="img/screen-dashboard.png" alt="Delever Dashboard" style="position:absolute;top:0;left:0;width:88%;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.15),0 4px 16px rgba(0,0,0,.06);z-index:1;border:1px solid rgba(0,0,0,.08)">
+      <img src="img/screen-orders.png" alt="Delever Orders" style="position:absolute;bottom:30px;left:-10px;width:65%;border-radius:10px;box-shadow:0 16px 48px rgba(99,102,241,.2),0 2px 8px rgba(0,0,0,.06);z-index:2;border:2px solid rgba(255,255,255,.9)">
+      <img src="img/screen-tablet.png" alt="Delever POS" style="position:absolute;top:40px;right:-20px;width:52%;border-radius:10px;box-shadow:0 16px 48px rgba(99,102,241,.18),0 2px 8px rgba(0,0,0,.06);z-index:3;border:2px solid rgba(255,255,255,.9)">
+      <img src="img/screen-mobile.png" alt="Delever Mobile" style="position:absolute;bottom:0;right:10px;width:22%;border-radius:20px;box-shadow:0 16px 48px rgba(99,102,241,.25),0 4px 12px rgba(0,0,0,.1);z-index:4;border:3px solid rgba(255,255,255,.95)">
+    </div>
+  </div>
+  <div class="slide-number">01 / 10</div>
+</div>
+
+<!-- ===== SLIDE 2: SALES CHANNELS ===== -->
+<div class="slide" data-slide="2">
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Каналы продаж</span><span class="en">Sales Channels</span></div>
+    <h2 class="animate d2"><span class="ru">Уникальные решения для <span class="gradient-text">масштабирования</span><br>как у лучших мировых компаний</span><span class="en">Unique solutions to <span class="gradient-text">scale</span><br>like the best global companies</span></h2>
+    <p class="subtitle animate d3" style="margin-bottom:8px"><span class="ru">Каждый бренд получает свой интерфейс для роста — под своим именем, в своём стиле.</span><span class="en">Every brand gets its own interface for growth — under its own name, in its own style.</span></p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px" class="animate d4">
+      <div class="channel-card">
+        <div style="font-size:32px;margin-bottom:10px">🌐</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Веб-сайт</span><span class="en">Website</span></div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5"><span class="ru">Брендированный сайт с меню, корзиной и оплатой</span><span class="en">Branded site with menu, cart & payments</span></div>
+        <div style="margin-top:10px;font-size:10px;color:#6366f1;font-weight:600">maxway.uz · yaponamama.uz</div>
+      </div>
+      <div class="channel-card">
+        <div style="font-size:32px;margin-bottom:10px">📱</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Мобильное приложение</span><span class="en">Mobile App</span></div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5"><span class="ru">iOS и Android под вашим брендом</span><span class="en">iOS & Android under your brand</span></div>
+        <div style="margin-top:10px;font-size:10px;color:#6366f1;font-weight:600">App Store · Google Play</div>
+      </div>
+      <div class="channel-card">
+        <div style="font-size:32px;margin-bottom:10px">💬</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px">Telegram-<span class="ru">бот</span><span class="en">bot</span></div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5"><span class="ru">Заказы прямо в мессенджере</span><span class="en">Orders right in the messenger</span></div>
+        <div style="margin-top:10px;font-size:10px;color:#6366f1;font-weight:600">@yaponamama_bot</div>
+      </div>
+      <div class="channel-card">
+        <div style="font-size:32px;margin-bottom:10px">📋</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px">QR-<span class="ru">меню</span><span class="en">Menu</span></div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5"><span class="ru">Заказ со столика без официанта</span><span class="en">Order from the table, no waiter</span></div>
+        <div style="margin-top:10px;font-size:10px;color:#6366f1;font-weight:600"><span class="ru">QR на столах</span><span class="en">QR on tables</span></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px" class="animate d5">
+      <div class="channel-card">
+        <div style="font-size:32px;margin-bottom:10px">🖥️</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Киоск самообслуживания</span><span class="en">Self-service Kiosk</span></div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5"><span class="ru">Приём заказов в зале без очередей</span><span class="en">In-hall orders without queues</span></div>
+      </div>
+      <div class="channel-card">
+        <div style="font-size:32px;margin-bottom:10px">📞</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Колл-центр</span><span class="en">Call Center</span></div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5"><span class="ru">Модуль для операторов телефонных заказов</span><span class="en">Module for phone order operators</span></div>
+      </div>
+      <div class="channel-card">
+        <div style="font-size:32px;margin-bottom:10px">📅</div>
+        <div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Бронирование</span><span class="en">Booking</span></div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5"><span class="ru">Онлайн-бронирование столиков</span><span class="en">Online table booking</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">02 / 10</div>
+</div>
+
+<!-- ===== SLIDE 3: WHAT YOU GET (INFOGRAPHIC) ===== -->
+<div class="slide" data-slide="3">
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Инфраструктура бизнеса</span><span class="en">Business Infrastructure</span></div>
+    <h2 class="animate d2"><span class="ru">Что получает ресторан <span class="gradient-text">с Delever</span></span><span class="en">What restaurants get <span class="gradient-text">with Delever</span></span></h2>
+    <p class="subtitle animate d3" style="margin-bottom:0"><span class="ru">Одна платформа для роста выручки, ускорения операций, запуска новых каналов и устранения ошибок.</span><span class="en">One platform to grow revenue, accelerate operations, unlock new channels, and eliminate errors.</span></p>
+    <div class="animate d4" style="margin-top:16px;display:flex;gap:20px;align-items:stretch">
+      <div style="flex:1.15;min-width:0;display:flex;align-items:center">
+        <svg viewBox="0 0 700 370" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+          <defs>
+            <linearGradient id="hubGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
+            <filter id="hubGlow"><feDropShadow dx="0" dy="3" stdDeviation="10" flood-color="#6366f1" flood-opacity=".25"/></filter>
+            <linearGradient id="logoG2" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#afdbd9"/><stop offset="1" stop-color="#f3e9dd"/></linearGradient>
+          </defs>
+          <path d="M138,56 C230,56 255,170 282,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M138,94 C225,94 255,170 282,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M138,132 C220,132 255,170 282,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M138,170 C210,170 255,170 282,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M138,208 C220,208 255,170 282,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M138,246 C225,246 255,170 282,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M138,284 C230,284 255,170 282,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C420,170 440,34 562,34" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C420,170 440,68 562,68" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C418,170 440,102 562,102" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C416,170 440,136 562,136" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C415,170 440,170 562,170" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C416,170 440,204 562,204" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C418,170 440,238 562,238" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C420,170 440,272 562,272" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C420,170 440,306 562,306" fill="none" stroke="#d8d8e8" stroke-width="1.5" stroke-dasharray="5,4" opacity=".7"/>
+          <path d="M378,170 C420,170 440,340 562,340" fill="none" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5,4" opacity=".8"/>
+          <circle cx="330" cy="170" r="62" fill="none" stroke="rgba(99,102,241,.04)" stroke-width="8"/>
+          <circle cx="330" cy="170" r="52" fill="none" stroke="rgba(99,102,241,.07)" stroke-width="6"/>
+          <circle cx="330" cy="170" r="42" fill="#152b45" filter="url(#hubGlow)"/>
+          <g transform="translate(288.7, 128.7) scale(0.159)">
+            <rect x="0" y="0" width="520" height="520" fill="#152b45"/>
+            <path d="M305.99,149.65h-164.8l-7.55,43.01h172.71l7.18,29.47h-185.05l-4.14,23.58h153.12l7.18,29.47H119.27l-4.14,23.58h131.57l7.18,29.47H109.98l-7.55,43.01h203.55c60.96,0,110.52-49.71,110.52-110.84s-49.56-110.84-110.52-110.84v.07Z" fill="url(#logoG2)"/>
+          </g>
+          <rect x="8" y="41" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="73" y="61" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">📱 <tspan class="ru">Агрегаторы</tspan><tspan class="en">Aggregators</tspan></text>
+          <rect x="8" y="79" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="73" y="99" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🌐 <tspan class="ru">Сайт</tspan><tspan class="en">Website</tspan></text>
+          <rect x="8" y="117" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="73" y="137" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">💬 Telegram</text>
+          <rect x="8" y="155" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="73" y="175" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">📲 <tspan class="ru">Приложение</tspan><tspan class="en">Mobile App</tspan></text>
+          <rect x="8" y="193" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="73" y="213" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">📋 QR <tspan class="ru">Меню</tspan><tspan class="en">Menu</tspan></text>
+          <rect x="8" y="231" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="73" y="251" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🖥️ <tspan class="ru">Киоск</tspan><tspan class="en">Kiosk</tspan></text>
+          <rect x="8" y="269" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="73" y="289" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">📞 <tspan class="ru">Звонки</tspan><tspan class="en">Calls</tspan></text>
+          <rect x="562" y="19" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="39" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🍳 POS</text>
+          <rect x="562" y="53" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="73" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">👨‍🍳 <tspan class="ru">Кухня</tspan><tspan class="en">Kitchen</tspan></text>
+          <rect x="562" y="87" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="107" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🚀 <tspan class="ru">Диспетчеризация</tspan><tspan class="en">Dispatch</tspan></text>
+          <rect x="562" y="121" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="141" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🏍️ <tspan class="ru">Курьеры</tspan><tspan class="en">Couriers</tspan></text>
+          <rect x="562" y="155" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="175" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">💳 <tspan class="ru">Платежи</tspan><tspan class="en">Payments</tspan></text>
+          <rect x="562" y="189" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="209" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">📢 <tspan class="ru">Маркетинг</tspan><tspan class="en">Marketing</tspan></text>
+          <rect x="562" y="223" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="243" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">⭐ <tspan class="ru">Отзывы</tspan><tspan class="en">Reviews</tspan></text>
+          <rect x="562" y="257" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="277" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">📊 <tspan class="ru">Аналитика</tspan><tspan class="en">Analytics</tspan></text>
+          <rect x="562" y="291" width="130" height="30" rx="10" fill="#fff" stroke="#e8e8f0" stroke-width="1.5"/>
+          <text x="627" y="311" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#4b5563">🔌 <tspan class="ru">Интеграции</tspan><tspan class="en">Integrations</tspan></text>
+          <rect x="562" y="325" width="130" height="30" rx="10" fill="#faf5ff" stroke="#a78bfa" stroke-width="1.5"/>
+          <text x="627" y="345" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#7c3aed">🤖 AI Agents</text>
+        </svg>
+      </div>
+      <div style="width:300px;flex-shrink:0;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:center">
+        <div class="card" style="padding:14px 14px 16px;border-left:3px solid #10b981">
+          <div style="font-size:28px;font-weight:900;color:#10b981;letter-spacing:-1px;line-height:1">5.5×</div>
+          <div style="font-size:12px;font-weight:700;color:#1a1a2e;margin-top:8px;line-height:1.3"><span class="ru">Рост выручки</span><span class="en">Revenue Growth</span></div>
+          <div style="font-size:10px;color:#6b7280;margin-top:4px;line-height:1.4"><span class="ru">Свои каналы вместо зависимости от агрегаторов</span><span class="en">Own channels replace aggregator dependency</span></div>
+          <div style="margin-top:8px;font-size:9px;font-weight:600;color:#9ca3af">MaxWay · 18 <span class="ru">мес</span><span class="en">mo</span></div>
+        </div>
+        <div class="card" style="padding:14px 14px 16px;border-left:3px solid #6366f1">
+          <div style="font-size:28px;font-weight:900;color:#6366f1;letter-spacing:-1px;line-height:1">90→35</div>
+          <div style="font-size:12px;font-weight:700;color:#1a1a2e;margin-top:8px;line-height:1.3"><span class="ru">Ускорение</span><span class="en">Faster Delivery</span></div>
+          <div style="font-size:10px;color:#6b7280;margin-top:4px;line-height:1.4"><span class="ru">Авто-распределение, оптимизация маршрутов</span><span class="en">Auto-dispatch, route optimization</span></div>
+          <div style="margin-top:8px;font-size:9px;font-weight:600;color:#9ca3af"><span class="ru">мин время доставки</span><span class="en">min delivery time</span></div>
+        </div>
+        <div class="card" style="padding:14px 14px 16px;border-left:3px solid #8b5cf6">
+          <div style="font-size:28px;font-weight:900;color:#8b5cf6;letter-spacing:-1px;line-height:1">+30%</div>
+          <div style="font-size:12px;font-weight:700;color:#1a1a2e;margin-top:8px;line-height:1.3"><span class="ru">Средний чек</span><span class="en">Average Check</span></div>
+          <div style="font-size:10px;color:#6b7280;margin-top:4px;line-height:1.4"><span class="ru">CRM, маркетинг, аналитика — решения на данных</span><span class="en">CRM, marketing, analytics — data-driven</span></div>
+          <div style="margin-top:8px;font-size:9px;font-weight:600;color:#9ca3af"><span class="ru">рост среднего чека</span><span class="en">avg check growth</span></div>
+        </div>
+        <div class="card" style="padding:14px 14px 16px;border-left:3px solid #f59e0b">
+          <div style="display:flex;align-items:baseline;gap:4px"><span style="font-size:18px;font-weight:800;color:#ef4444;text-decoration:line-through">7%</span><span style="font-size:14px;color:#d1d5db">→</span><span style="font-size:28px;font-weight:900;color:#10b981;letter-spacing:-1px;line-height:1">0%</span></div>
+          <div style="font-size:12px;font-weight:700;color:#1a1a2e;margin-top:8px;line-height:1.3"><span class="ru">Ноль ошибок</span><span class="en">Zero Errors</span></div>
+          <div style="font-size:10px;color:#6b7280;margin-top:4px;line-height:1.4"><span class="ru">Автоматизация убирает ручной ввод</span><span class="en">Automation removes manual entry</span></div>
+          <div style="margin-top:8px;font-size:9px;font-weight:600;color:#9ca3af">Okazaki · 25 <span class="ru">точек</span><span class="en">locations</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">03 / 10</div>
+</div>
+
+<!-- ===== SLIDE 4: REAL CASES (copied from pitch) ===== -->
+<div class="slide" data-slide="4">
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Результат</span><span class="en">Impact</span></div>
+    <h2 class="animate d2"><span class="ru">Реальные кейсы. Реальные цифры.</span><span class="en">Real Cases. Real Numbers.</span></h2>
+    <div class="animate d3" style="margin-top:20px;background:linear-gradient(135deg,rgba(99,102,241,.06),rgba(139,92,246,.03));border:1.5px solid rgba(99,102,241,.18);border-radius:20px;padding:28px 32px;display:flex;align-items:center;gap:36px">
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">MaxWay · <span class="ru">Национальный фастфуд</span><span class="en">National Fast Food</span></div>
+        <div style="display:flex;align-items:baseline;gap:12px">
+          <span style="font-size:42px;font-weight:800;color:#6366f1;letter-spacing:-1px">5.5×</span>
+          <span style="font-size:16px;font-weight:600;color:#6b7280"><span class="ru">рост заказов за 18 месяцев</span><span class="en">order growth in 18 months</span></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px">
+        <div style="text-align:center;padding:12px 18px;background:#fff;border-radius:14px;border:1px solid #ebebef">
+          <div style="font-size:22px;font-weight:800;color:#10b981">+30%</div>
+          <div style="font-size:10px;color:#6b7280;font-weight:600;margin-top:2px"><span class="ru">ср. чек</span><span class="en">avg check</span></div>
+        </div>
+        <div style="text-align:center;padding:12px 18px;background:#fff;border-radius:14px;border:1px solid #ebebef">
+          <div style="font-size:22px;font-weight:800;color:#10b981">25%</div>
+          <div style="font-size:10px;color:#6b7280;font-weight:600;margin-top:2px"><span class="ru">возвращаемость</span><span class="en">repeat orders</span></div>
+        </div>
+        <div style="text-align:center;padding:12px 18px;background:#fff;border-radius:14px;border:1px solid #ebebef">
+          <div style="font-size:22px;font-weight:800;color:#6366f1">90→35</div>
+          <div style="font-size:10px;color:#6b7280;font-weight:600;margin-top:2px"><span class="ru">мин доставка</span><span class="en">min delivery</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="animate d4" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px">
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Pizza Hut · Hardee's</div>
+        <div style="font-size:28px;font-weight:800;color:#1a1a2e;margin-bottom:4px">100%</div>
+        <div style="font-size:10px;color:#6b7280;font-weight:600"><span class="ru">онлайн-слой закрыт</span><span class="en">online layer covered</span></div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.4"><span class="ru">Полная IT-инфраструктура для франшиз на новых рынках</span><span class="en">Full IT infra for franchises in new markets</span></div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Okazaki · 25</div>
+        <div style="display:flex;align-items:baseline;justify-content:center;gap:6px">
+          <span style="font-size:18px;font-weight:800;color:#ef4444;text-decoration:line-through">7%</span>
+          <span style="font-size:14px;color:#d1d5db">→</span>
+          <span style="font-size:28px;font-weight:800;color:#10b981">0%</span>
+        </div>
+        <div style="font-size:10px;color:#6b7280;font-weight:600"><span class="ru">IT-ошибок</span><span class="en">IT errors</span></div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.4"><span class="ru">Вернули 7% выручки, которые терялись</span><span class="en">Saved 7% revenue lost to bugs</span></div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">ABR Group · 50+</div>
+        <div style="font-size:28px;font-weight:800;color:#6366f1;margin-bottom:4px">+1 ★</div>
+        <div style="font-size:10px;color:#6b7280;font-weight:600"><span class="ru">рейтинг в сервисах</span><span class="en">rating on apps</span></div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.4"><span class="ru">Скидки и стоп-листы работают, выручка растёт</span><span class="en">Fixed discounts & stop-lists, revenue up</span></div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Yaponamama · 26</div>
+        <div style="font-size:28px;font-weight:800;color:#10b981;margin-bottom:4px">−$70K</div>
+        <div style="font-size:10px;color:#6b7280;font-weight:600"><span class="ru">экономия в год</span><span class="en">saved per year</span></div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.4"><span class="ru">30→14 операторов, +15% чек, быстрее доставка</span><span class="en">30→14 operators, +15% check, faster delivery</span></div>
+      </div>
+      <div class="card" style="padding:16px;text-align:center">
+        <div style="font-size:10px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px"><span class="ru">Фуд-платформы</span><span class="en">Food Platforms</span></div>
+        <div style="font-size:28px;font-weight:800;color:#10b981;margin-bottom:4px">99%</div>
+        <div style="font-size:10px;color:#6b7280;font-weight:600"><span class="ru">заполненность</span><span class="en">card fill rate</span></div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:8px;line-height:1.4">Yandex Eats · Glovo · Wolt · Uzum · <span class="ru">&lt;1% ошибок</span><span class="en">&lt;1% errors</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">04 / 10</div>
+</div>
+
+<!-- ===== SLIDE 5: WHY DELEVER (Business Results) ===== -->
+<div class="slide" data-slide="5">
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Зачем</span><span class="en">Why Delever</span></div>
+    <h2 class="animate d2"><span class="ru">Помогаем бизнесам выходить на<br><span class="gradient-text">новый уровень</span></span><span class="en">Helping businesses reach<br>a <span class="gradient-text">new level</span></span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px">
+      <div class="card animate d3" style="display:flex;gap:20px;align-items:flex-start;padding:28px">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.06));display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🚀</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">Новый уровень техоснащённости</span><span class="en">New Level of Tech Infrastructure</span></div>
+          <div style="font-size:13px;color:#6b7280;line-height:1.6"><span class="ru">За короткий срок выходите на уровень технологичных компаний международного класса с возможностью лёгкого масштабирования</span><span class="en">Quickly reach the level of world-class tech companies with the ability to scale easily</span></div>
+        </div>
+      </div>
+      <div class="card animate d3" style="display:flex;gap:20px;align-items:flex-start;padding:28px">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(16,185,129,.1),rgba(16,185,129,.04));display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">⚙️</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">−95% операционной работы</span><span class="en">−95% Operational Work</span></div>
+          <div style="font-size:13px;color:#6b7280;line-height:1.6"><span class="ru">Стандартизированные процессы снимают рутину — команда фокусируется на росте, а не на тушении пожаров</span><span class="en">Standardized processes remove routine — your team focuses on growth, not firefighting</span></div>
+        </div>
+      </div>
+      <div class="card animate d4" style="display:flex;gap:20px;align-items:flex-start;padding:28px">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.04));display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🔍</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">Уязвимости и точки роста</span><span class="en">Vulnerabilities & Growth Points</span></div>
+          <div style="font-size:13px;color:#6b7280;line-height:1.6"><span class="ru">Показываем все слабые места и возможности бизнеса для принятия стратегических решений на основе данных</span><span class="en">We reveal all weak spots and opportunities for data-driven strategic decisions</span></div>
+        </div>
+      </div>
+      <div class="card animate d4" style="display:flex;gap:20px;align-items:flex-start;padding:28px">
+        <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(99,102,241,.04));display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">📈</div>
+        <div>
+          <div style="font-size:16px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">+60% дополнительной выручки</span><span class="en">+60% Additional Revenue</span></div>
+          <div style="font-size:13px;color:#6b7280;line-height:1.6"><span class="ru">С новых каналов продаж или за счёт усовершенствования имеющихся — одна система вместо десятка разрозненных</span><span class="en">From new sales channels or by improving existing ones — one system instead of ten disconnected</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="animate d6" style="margin-top:24px;padding:20px 28px;background:linear-gradient(135deg,rgba(99,102,241,.04),rgba(139,92,246,.02));border:1.5px solid rgba(99,102,241,.12);border-radius:16px;display:flex;align-items:center;gap:20px">
+      <div style="font-size:32px;font-weight:900;color:#6366f1;letter-spacing:-1px;white-space:nowrap">1 <span class="ru">система</span><span class="en">system</span></div>
+      <div style="font-size:14px;color:#6b7280"><span class="ru">вместо десятка сложных и разрозненных — все процессы, каналы и данные в едином пространстве</span><span class="en">instead of ten complex disconnected ones — all processes, channels, and data in a single space</span></div>
+    </div>
+  </div>
+  <div class="slide-number">05 / 10</div>
+</div>
+
+<!-- ===== SLIDE 6: MARKET LANDSCAPE ===== -->
+<div class="slide" data-slide="6">
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Ландшафт рынка</span><span class="en">Market Landscape</span></div>
+    <h2 class="animate d2"><span class="ru">Где мы среди <span class="gradient-text">конкурентов</span></span><span class="en">Where we stand among <span class="gradient-text">competitors</span></span></h2>
+    <div class="animate d3" style="margin-top:12px">
+      <svg viewBox="0 0 760 395" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;max-height:62vh">
+        <defs>
+          <linearGradient id="cGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient>
+          <linearGradient id="dlvEGrad" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#afdbd9"/><stop offset="1" stop-color="#f3e9dd"/></linearGradient>
+          <filter id="cGlow"><feDropShadow dx="0" dy="4" stdDeviation="10" flood-color="#6366f1" flood-opacity=".35"/></filter>
+        </defs>
+        <rect x="42" y="18" width="328" height="182" rx="8" fill="#f9fafb" opacity=".5"/>
+        <rect x="370" y="18" width="348" height="182" rx="8" fill="rgba(236,253,245,.3)"/>
+        <rect x="42" y="200" width="328" height="177" rx="8" fill="#fcfcfd" opacity=".4"/>
+        <rect x="370" y="200" width="348" height="177" rx="8" fill="rgba(245,243,255,.25)"/>
+        <line x1="42" y1="200" x2="718" y2="200" stroke="#e0e0e8" stroke-width="1"/>
+        <line x1="370" y1="18" x2="370" y2="377" stroke="#e0e0e8" stroke-width="1"/>
+        <text class="en" x="56" y="192" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#c0c0c8" letter-spacing="1">← INTEGRATION ONLY</text>
+        <text class="ru" x="56" y="192" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#c0c0c8" letter-spacing=".6">← ТОЛЬКО ИНТЕГРАЦИЯ</text>
+        <text class="en" x="570" y="192" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#6366f1" letter-spacing="1">FULL PLATFORM →</text>
+        <text class="ru" x="570" y="192" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#6366f1" letter-spacing=".6">ПОЛНАЯ ПЛАТФОРМА →</text>
+        <text class="en" x="380" y="14" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#b0b0b8" letter-spacing="1">↑ GLOBAL</text>
+        <text class="ru" x="380" y="14" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#b0b0b8" letter-spacing=".6">↑ ГЛОБАЛЬНЫЙ</text>
+        <text class="en" x="380" y="392" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#b0b0b8" letter-spacing="1">↓ LOCAL</text>
+        <text class="ru" x="380" y="392" font-family="Inter,sans-serif" font-size="10" font-weight="800" fill="#b0b0b8" letter-spacing=".6">↓ ЛОКАЛЬНЫЙ</text>
+        <rect x="90" y="50" width="140" height="38" rx="19" fill="#fff" stroke="#c8c8d0" stroke-width="1.5"/>
+        <text x="160" y="74" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#374151">Deliverect</text>
+        <text class="en" x="160" y="102" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#6b7280" font-weight="600">$1.5B · 50 countries</text>
+        <text class="ru" x="160" y="102" text-anchor="middle" font-family="Inter,sans-serif" font-size="9.5" fill="#6b7280" font-weight="600">$1,5B · 50 стран</text>
+        <text class="en" x="160" y="116" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="#9ca3af">Aggregator → POS only</text>
+        <text class="ru" x="160" y="116" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="#9ca3af">Только агрегаторы → POS</text>
+        <rect x="175" y="125" width="120" height="34" rx="17" fill="#fff" stroke="#d0d0d8" stroke-width="1.2"/>
+        <text x="235" y="147" text-anchor="middle" font-family="Inter,sans-serif" font-size="12" font-weight="600" fill="#4b5563">Grub Tech</text>
+        <text class="en" x="235" y="172" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#6b7280" font-weight="600">$300M+ · MENA · 10K loc</text>
+        <text class="ru" x="235" y="172" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" fill="#6b7280" font-weight="600">$300M+ · MENA · 10К точек</text>
+        <rect x="110" y="232" width="105" height="30" rx="15" fill="#fff" stroke="#e0e0e8" stroke-width="1"/>
+        <text x="162" y="252" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#6b7280">Get Order</text>
+        <text class="en" x="162" y="275" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="#9ca3af">Ukraine · Agg + POS</text>
+        <text class="ru" x="162" y="275" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="#9ca3af">Украина · Агрег. + POS</text>
+        <rect x="95" y="286" width="95" height="30" rx="15" fill="#fff" stroke="#e0e0e8" stroke-width="1"/>
+        <text x="142" y="306" text-anchor="middle" font-family="Inter,sans-serif" font-size="11.5" font-weight="600" fill="#6b7280">Kwaaka</text>
+        <text class="en" x="142" y="328" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="#9ca3af">KZ · Basic integrations</text>
+        <text class="ru" x="142" y="328" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" fill="#9ca3af">KZ · Базовые интеграции</text>
+        <rect x="80" y="342" width="130" height="28" rx="14" fill="#f5f5f8" stroke="#e8e8f0" stroke-width="1"/>
+        <text x="145" y="361" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#9ca3af">iiko · R-Keeper</text>
+        <!-- Local platforms — separate -->
+        <rect x="388" y="230" width="90" height="28" rx="14" fill="#fff" stroke="#e0e0e8" stroke-width="1"/>
+        <text x="433" y="249" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#9ca3af">LaCafe</text>
+        <text class="en" x="433" y="262" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Narrow</text>
+        <text class="ru" x="433" y="262" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Узкий</text>
+
+        <rect x="388" y="272" width="95" height="28" rx="14" fill="#fff" stroke="#e0e0e8" stroke-width="1"/>
+        <text x="435" y="291" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#9ca3af">Zoomda</text>
+        <text class="en" x="435" y="304" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Legacy</text>
+        <text class="ru" x="435" y="304" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Устаревший</text>
+
+        <rect x="500" y="240" width="90" height="28" rx="14" fill="#fff" stroke="#e0e0e8" stroke-width="1"/>
+        <text x="545" y="259" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#9ca3af">Baraka</text>
+        <text class="en" x="545" y="272" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Legacy</text>
+        <text class="ru" x="545" y="272" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Устаревший</text>
+
+        <rect x="500" y="280" width="100" height="28" rx="14" fill="#fff" stroke="#e0e0e8" stroke-width="1"/>
+        <text x="550" y="299" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="600" fill="#9ca3af">Optochka</text>
+        <text class="en" x="550" y="312" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Narrow</text>
+        <text class="ru" x="550" y="312" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#c0c0c8">UZ · Узкий</text>
+
+        <rect x="420" y="320" width="170" height="28" rx="14" fill="#f5f5f8" stroke="#e8e8f0" stroke-width="1"/>
+        <text class="en" x="505" y="339" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#b0b0b8">+ other custom dev teams</text>
+        <text class="ru" x="505" y="339" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#b0b0b8">+ другие разработки</text>
+        <circle cx="540" cy="120" r="90" fill="rgba(99,102,241,.03)"/>
+        <circle cx="540" cy="120" r="65" fill="rgba(99,102,241,.04)"/>
+        <rect x="440" y="44" width="200" height="28" rx="10" fill="rgba(99,102,241,.06)" stroke="rgba(99,102,241,.12)" stroke-width="1"/>
+        <text x="540" y="58" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" fill="#6366f1" font-weight="700">Yandex Eats · Glovo · Wolt · Uzum Tezkor</text>
+        <text class="en" x="540" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#a5b4fc">Partner via Delever integration layer</text>
+        <text class="ru" x="540" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="7" fill="#a5b4fc">Работают через интеграционный слой Delever</text>
+        <text class="en" x="540" y="88" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#818cf8">Orders · Delivery · CRM · Analytics · Channels</text>
+        <text class="ru" x="540" y="88" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="700" fill="#818cf8">Заказы · Доставка · CRM · Аналитика · Каналы</text>
+        <g transform="translate(516, 98) scale(0.09)" filter="url(#cGlow)">
+          <path d="M347.71,5.67h-176.41C79.52,5.67,5.12,80.28,5.12,172.32v176.92c0,92.04,74.4,166.66,166.18,166.66h176.41c91.78,0,166.18-74.61,166.18-166.66v-176.92c0-92.04-74.4-166.66-166.18-166.66Z" fill="#152b45"/>
+          <path d="M305.99,149.65h-164.8l-7.55,43.01h172.71l7.18,29.47h-185.05l-4.14,23.58h153.12l7.18,29.47H119.27l-4.14,23.58h131.57l7.18,29.47H109.98l-7.55,43.01h203.55c60.96,0,110.52-49.71,110.52-110.84s-49.56-110.84-110.52-110.84v.07Z" fill="url(#dlvEGrad)"/>
+        </g>
+        <text x="540" y="160" text-anchor="middle" font-family="Inter,sans-serif" font-size="18" font-weight="800" fill="#152b45" letter-spacing=".3">Delever</text>
+        <text class="en" x="540" y="178" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#6366f1">5 countries · 1,200+ locations · 250+ brands</text>
+        <text class="ru" x="540" y="178" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="700" fill="#6366f1">5 стран · 1 200+ заведений · 250+ брендов</text>
+        <path d="M580,65 C595,45 610,35 630,28" fill="none" stroke="rgba(16,185,129,.4)" stroke-width="2" stroke-dasharray="5,4"/>
+        <polygon points="630,28 619,34 623,39" fill="rgba(16,185,129,.4)"/>
+        <rect x="470" y="24" width="145" height="18" rx="9" fill="none" stroke="rgba(16,185,129,.3)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text class="en" x="542" y="37" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#10b981" opacity=".8">OPPORTUNITY ZONE</text>
+        <text class="ru" x="542" y="37" text-anchor="middle" font-family="Inter,sans-serif" font-size="8" font-weight="700" fill="#10b981" opacity=".8">ЗОНА ВОЗМОЖНОСТИ</text>
+      </svg>
+    </div>
+    <div class="animate d4" style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;justify-content:center">
+      <span class="tag" style="font-size:11px;padding:6px 14px">⚡ <span class="en">~1h onboarding</span><span class="ru">Подключение ~1ч</span></span>
+      <span class="tag" style="font-size:11px;padding:6px 14px">🔗 40+ <span class="en">integrations</span><span class="ru">интеграций</span></span>
+      <span class="tag" style="font-size:11px;padding:6px 14px">🚚 <span class="en">Courier management</span><span class="ru">Управление курьерами</span></span>
+      <span class="tag" style="font-size:11px;padding:6px 14px">🎧 1.5 <span class="en">min support</span><span class="ru">мин ответ</span></span>
+      <span class="tag" style="font-size:11px;padding:6px 14px">📊 <span class="en">Full analytics + CRM</span><span class="ru">Полная аналитика + CRM</span></span>
+    </div>
+  </div>
+  <div class="slide-number">06 / 10</div>
+</div>
+
+<!-- ===== SLIDE 7: WHY US (Team + SLA) ===== -->
+<div class="slide" data-slide="7">
+
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Почему мы</span><span class="en">Why Us</span></div>
+    <h2 class="animate d2"><span class="ru">Сильная команда, которая<br><span class="gradient-text">понимает боль клиента</span></span><span class="en">Strong team that<br><span class="gradient-text">understands client pain</span></span></h2>
+    <p class="subtitle animate d3" style="margin-bottom:4px"><span class="ru">Ответственная и коммуникабельная команда, которая знает важность быстрого реагирования — онлайн не терпит медлительности.</span><span class="en">A responsive, communicative team that knows the importance of fast action — online doesn't tolerate slowness.</span></p>
+    <div class="team-grid animate d4">
+      <div class="team-card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"><img src="img/fakhriddin.png" alt="Fakhriddin Yusupov" style="width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0;border:3px solid #e0e7ff"><div><div class="team-name">Fakhriddin Yusupov</div><div class="team-role">CEO & Founder</div></div></div>
+        <div style="font-size:12px;color:#4b5563;line-height:1.7">
+          <span class="ru">15 лет опыта в управлении сетью ресторанов, продажами и автоматизации процессов доставки. Экс-CEO MaxWay — рост выручки 5.5×</span>
+          <span class="en">15 years managing restaurant chains, sales & delivery automation. Ex-CEO MaxWay — 5.5× revenue growth</span>
+        </div>
+      </div>
+      <div class="team-card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"><img src="img/azizbek.png" alt="Azizbek Bakhodirov" style="width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0;border:3px solid #d1fae5"><div><div class="team-name">Azizbek Bakhodirov</div><div class="team-role">COO & Co-founder</div></div></div>
+        <div style="font-size:12px;color:#4b5563;line-height:1.7">
+          <span class="ru">Экс-Express24 — первый национальный фуд-агрегатор. 7 лет управления командами и IT-аутсорсингом</span>
+          <span class="en">Ex-Express24 — first national food aggregator. 7 years managing teams & IT outsourcing</span>
+        </div>
+      </div>
+      <div class="team-card">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px"><img src="img/abdullo.png" alt="Abdullo Khidoyatov" style="width:72px;height:72px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0;border:3px solid #dbeafe"><div><div class="team-name">Abdullo Khidoyatov</div><div class="team-role">CTO & Co-founder</div></div></div>
+        <div style="font-size:12px;color:#4b5563;line-height:1.7">
+          <span class="ru">Экс-MyTaxi — построил первый онлайн-сервис такси. Сильный технический лидер с 7-летним опытом</span>
+          <span class="en">Ex-MyTaxi — built the first online taxi service. Strong technical leader with 7 years experience</span>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px" class="animate d5">
+      <div class="sla-card">
+        <div class="sla-value" style="color:#6366f1">1.5 <span style="font-size:16px"><span class="ru">мин</span><span class="en">min</span></span></div>
+        <div class="sla-label"><span class="ru">Скорость ответа</span><span class="en">Response time</span></div>
+      </div>
+      <div class="sla-card">
+        <div class="sla-value" style="color:#10b981">99.99%</div>
+        <div class="sla-label"><span class="ru">Стабильность</span><span class="en">Uptime</span></div>
+      </div>
+      <div class="sla-card">
+        <div class="sla-value" style="color:#8b5cf6">4 <span style="font-size:16px"><span class="ru">часа</span><span class="en">hrs</span></span></div>
+        <div class="sla-label"><span class="ru">Решение проблем</span><span class="en">Issue resolution</span></div>
+      </div>
+      <div class="sla-card">
+        <div class="sla-value" style="color:#1a1a2e">1M+</div>
+        <div class="sla-label"><span class="ru">Заказов в месяц</span><span class="en">Orders per month</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">07 / 10</div>
+</div>
+
+<!-- ===== SLIDE 8: HOW WE WORK ===== -->
+<div class="slide" data-slide="8">
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Как начать</span><span class="en">Getting Started</span></div>
+    <h2 class="animate d2"><span class="ru">Запуск за <span class="gradient-text">3–7 дней</span></span><span class="en">Launch in <span class="gradient-text">3–7 days</span></span></h2>
+    <div class="timeline animate d4">
+      <div class="tl-step">
+        <div class="tl-num">1</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Консультация</span><span class="en">Consultation</span></div>
+          <div style="font-size:12px;color:#6b7280;line-height:1.4;max-width:150px"><span class="ru">Анализ бизнеса и потребностей</span><span class="en">Business & needs analysis</span></div>
+          <div style="font-size:11px;font-weight:700;color:#6366f1;margin-top:6px;padding:2px 10px;background:rgba(99,102,241,.06);border-radius:100px;display:inline-block"><span class="ru">1 день</span><span class="en">1 day</span></div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-num">2</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Настройка</span><span class="en">Setup</span></div>
+          <div style="font-size:12px;color:#6b7280;line-height:1.4;max-width:150px"><span class="ru">Меню, интеграции, дизайн</span><span class="en">Menu, integrations, design</span></div>
+          <div style="font-size:11px;font-weight:700;color:#6366f1;margin-top:6px;padding:2px 10px;background:rgba(99,102,241,.06);border-radius:100px;display:inline-block"><span class="ru">2–3 дня</span><span class="en">2–3 days</span></div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-num">3</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Обучение</span><span class="en">Training</span></div>
+          <div style="font-size:12px;color:#6b7280;line-height:1.4;max-width:150px"><span class="ru">Обучение команды работе с платформой</span><span class="en">Team training on the platform</span></div>
+          <div style="font-size:11px;font-weight:700;color:#6366f1;margin-top:6px;padding:2px 10px;background:rgba(99,102,241,.06);border-radius:100px;display:inline-block"><span class="ru">1 день</span><span class="en">1 day</span></div>
+        </div>
+      </div>
+      <div class="tl-step">
+        <div class="tl-num">4</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:4px"><span class="ru">Запуск</span><span class="en">Launch</span></div>
+          <div style="font-size:12px;color:#6b7280;line-height:1.4;max-width:150px"><span class="ru">Старт и постоянная поддержка</span><span class="en">Go live & ongoing support</span></div>
+          <div style="font-size:11px;font-weight:700;color:#6366f1;margin-top:6px;padding:2px 10px;background:rgba(99,102,241,.06);border-radius:100px;display:inline-block">∞</div>
+        </div>
+      </div>
+    </div>
+    <div class="animate d6" style="margin-top:48px;padding:28px 36px;background:linear-gradient(135deg,rgba(99,102,241,.04),rgba(139,92,246,.02));border:1.5px solid rgba(99,102,241,.12);border-radius:20px;display:flex;align-items:center;gap:24px;max-width:640px">
+      <div style="font-size:48px">🚀</div>
+      <div>
+        <div style="font-size:18px;font-weight:800;color:#1a1a2e"><span class="ru">Бесплатная консультация</span><span class="en">Free Consultation</span></div>
+        <div style="font-size:14px;color:#6b7280;margin-top:4px"><span class="ru">Покажем платформу и подберём оптимальное решение для вашего бизнеса</span><span class="en">We'll demo the platform and find the best solution for your business</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">08 / 10</div>
+</div>
+
+<!-- ===== SLIDE 9: INTEGRATIONS ===== -->
+<div class="slide" data-slide="9">
+  <div class="slide-content">
+    <div class="section-label animate d1"><span class="ru">Бесшовные интеграции</span><span class="en">Seamless Integrations</span></div>
+    <h2 class="animate d2"><span class="ru">Вся цепочка работает <span class="gradient-text">безупречно</span></span><span class="en">The entire chain works <span class="gradient-text">flawlessly</span></span></h2>
+    <p class="subtitle animate d3"><span class="ru">Мы сделали бесшовные интеграции с учётно-кассовыми, платёжными и курьерскими сервисами, чтобы вся цепочка увеличивала скорость и выручку бизнеса.</span><span class="en">We built seamless integrations with POS, payment, and courier services so the entire chain increases speed and business revenue.</span></p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px">
+      <div class="animate d4">
+        <div style="margin-bottom:20px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9ca3af;margin-bottom:10px"><span class="ru">Агрегаторы</span><span class="en">Aggregators</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <span class="logo-item">Yandex Eats</span><span class="logo-item">Wolt</span><span class="logo-item">Glovo</span><span class="logo-item">Uzum Tezkor</span><span class="logo-item">Bolt Food</span><span class="logo-item">Express 24</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9ca3af;margin-bottom:10px"><span class="ru">Курьерские службы</span><span class="en">Courier Services</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <span class="logo-item">Yandex Delivery</span><span class="logo-item">Wolt Drive</span><span class="logo-item">Millennium</span><span class="logo-item">Noor Taxi</span>
+          </div>
+        </div>
+      </div>
+      <div class="animate d5">
+        <div style="margin-bottom:20px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9ca3af;margin-bottom:10px"><span class="ru">Платёжные системы</span><span class="en">Payment Systems</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <span class="logo-item">Payme</span><span class="logo-item">Click</span><span class="logo-item">Uzum Pay</span><span class="logo-item">Visa</span><span class="logo-item">Mastercard</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#9ca3af;margin-bottom:10px">POS <span class="ru">системы</span><span class="en">Systems</span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <span class="logo-item">R-Keeper</span><span class="logo-item">iiko</span><span class="logo-item">Poster</span><span class="logo-item">Jowi</span><span class="logo-item">1C</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">09 / 10</div>
+</div>
+
+<!-- ===== SLIDE 10: CONTACT ===== -->
+<div class="slide" data-slide="10">
+  <canvas class="particles-canvas" id="particles10"></canvas>
+  <div class="slide-content" style="display:flex;flex-direction:column;justify-content:center;align-items:center;height:100%">
+    <div class="section-label animate d1"><span class="ru">Готовы начать?</span><span class="en">Ready to Start?</span></div>
+    <h1 class="animate d2" style="font-size:44px;text-align:center"><span class="ru">Свяжитесь с нами</span><span class="en">Get in Touch</span></h1>
+    <p class="subtitle animate d3" style="text-align:center;margin-bottom:36px"><span class="ru">Бесплатная консультация и демонстрация платформы</span><span class="en">Free consultation and platform demo</span></p>
+    <div style="display:grid;grid-template-columns:auto auto;gap:48px;align-items:center">
+      <div class="animate d4">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <a href="https://delever.io" target="_blank" rel="noopener" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">🌐</div><span>delever.io</span></a>
+          <a href="mailto:support@delever.uz" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">📧</div><span>support@delever.uz</span></a>
+          <a href="tel:+998781139813" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">📞</div><span>+998 78 113 98 13</span></a>
+          <a href="https://t.me/deleverme" target="_blank" rel="noopener" class="contact-item" style="text-decoration:none;color:inherit"><div class="contact-icon">💬</div><span>@deleverme</span></a>
+        </div>
+        <div style="margin-top:28px">
+          <div style="font-size:26px;font-weight:800;letter-spacing:-1px;color:#0f0f1a">Delever</div>
+          <div style="font-size:11px;color:#bbb;margin-top:3px;letter-spacing:2px"><span class="ru">ПЛАТФОРМА ДЛЯ ЦИФРОВОГО РОСТА</span><span class="en">DIGITAL GROWTH PLATFORM</span></div>
+        </div>
+      </div>
+      <div class="animate d5" style="display:flex;flex-direction:column;align-items:center">
+        <div style="background:#fff;border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(99,102,241,.12),0 0 0 1px rgba(99,102,241,.08)">
+          <div id="qr-container" style="width:160px;height:160px;display:flex;align-items:center;justify-content:center"></div>
+        </div>
+        <p style="margin-top:12px;font-size:12px;font-weight:600;color:#9ca3af;letter-spacing:0.5px"><span class="ru">Сканируйте для перехода на сайт</span><span class="en">Scan to visit website</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">10 / 10</div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <div class="slide-counter" id="slideCounter">01 / 10</div>
+  <div class="progress-bar" id="progressBar" onclick="handleProgressClick(event)"><div class="progress-fill" id="progressFill" style="width:10%"></div></div>
+  <div class="nav-btns"><button class="nav-btn" onclick="prevSlide()" title="Previous">‹</button><button class="nav-btn" onclick="nextSlide()" title="Next">›</button></div>
+</div>
+<div class="keyboard-hint"><kbd>←</kbd> <kbd>→</kbd> <span class="ru">навигация</span><span class="en">navigate</span> · <kbd>F</kbd> <span class="ru">полный экран</span><span class="en">fullscreen</span></div>
+<a href="index.html" class="pitch-btn" title="Investor Pitch"><span class="ru">📊 Инвестор питч →</span><span class="en">📊 Investor Pitch →</span></a>
+<button class="pdf-btn" onclick="window.print()" title="Export PDF">📄 PDF</button>
+<button class="fullscreen-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script>
+function setLang(lang) {
+  document.body.className = 'lang-' + lang;
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+  document.getElementById('btnRu').classList.toggle('active', lang === 'ru');
+  localStorage.setItem('delever-lang', lang);
+}
+const saved = localStorage.getItem('delever-lang');
+if (saved) setLang(saved); else setLang('ru');
+
+let currentSlide = 1;
+const totalSlides = 10;
+const slides = document.querySelectorAll('.slide');
+
+function goToSlide(n) {
+  if (n < 1 || n > totalSlides) return;
+  slides[currentSlide - 1].classList.remove('active');
+  currentSlide = n;
+  const target = slides[currentSlide - 1];
+  target.classList.remove('active');
+  void target.offsetWidth;
+  target.classList.add('active');
+  document.getElementById('slideCounter').textContent = String(currentSlide).padStart(2, '0') + ' / ' + totalSlides;
+  document.getElementById('progressFill').style.width = ((currentSlide / totalSlides) * 100) + '%';
+}
+function nextSlide() { goToSlide(currentSlide + 1); }
+function prevSlide() { goToSlide(currentSlide - 1); }
+function handleProgressClick(e) {
+  const r = document.getElementById('progressBar').getBoundingClientRect();
+  goToSlide(Math.max(1, Math.min(totalSlides, Math.ceil(((e.clientX - r.left) / r.width) * totalSlides))));
+}
+function toggleFullscreen() {
+  const el = document.documentElement;
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+  }
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prevSlide(); }
+  else if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  else if (e.key === 'Home') goToSlide(1);
+  else if (e.key === 'End') goToSlide(totalSlides);
+});
+let touchStartX = 0, touchStartY = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, {passive: true});
+document.addEventListener('touchend', e => {
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  const dy = touchStartY - e.changedTouches[0].clientY;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) { dx > 0 ? nextSlide() : prevSlide(); }
+}, {passive: true});
+
+function initParticles(id) {
+  const c = document.getElementById(id); if (!c) return;
+  const ctx = c.getContext('2d'); let w, h, ps = [];
+  function resize() { w = c.width = c.parentElement.offsetWidth; h = c.height = c.parentElement.offsetHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for (let i = 0; i < 50; i++) ps.push({ x: Math.random()*w, y: Math.random()*h, r: Math.random()*2+1, vx: (Math.random()-.5)*.5, vy: (Math.random()-.5)*.5, o: Math.random()*.3+.05 });
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    ps.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x<0) p.x=w; if (p.x>w) p.x=0; if (p.y<0) p.y=h; if (p.y>h) p.y=0; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fillStyle = `rgba(99,102,241,${p.o})`; ctx.fill(); });
+    ps.forEach((a, i) => { ps.slice(i+1).forEach(b => { const d = Math.hypot(a.x-b.x, a.y-b.y); if (d<120) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.strokeStyle = `rgba(99,102,241,${.06*(1-d/120)})`; ctx.lineWidth = .5; ctx.stroke(); } }); });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+initParticles('particles1');
+initParticles('particles10');
+
+(function() {
+  if (typeof qrcode === 'undefined') return;
+  try {
+    var q = qrcode(0, 'M');
+    q.addData('https://delever.io');
+    q.make();
+    var el = document.getElementById('qr-container');
+    if (el) {
+      el.innerHTML = q.createSvgTag({cellSize: 3, margin: 0, scalable: true});
+      var svg = el.querySelector('svg');
+      if (svg) { svg.style.width = '100%'; svg.style.height = '100%'; }
+    }
+  } catch(e) { console.warn('QR:', e); }
+})();
+</script>
+</body>
+</html>
