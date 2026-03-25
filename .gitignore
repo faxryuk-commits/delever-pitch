@@ -3,3 +3,6 @@
 !img/*.png
 .DS_Store
 .vercel
+bot/.env
+bot/db.json
+bot/__pycache__/
