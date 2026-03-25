@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Delever — Virtual Data Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:#f8f9fb;color:#1a1a2e;min-height:100vh}
+body.lang-en .ru{display:none!important}
+body.lang-ru .en{display:none!important}
+
+/* ===== GATE PAGE ===== */
+.gate{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,#f8f8ff 0%,#fff 30%,#f5f3ff 60%,#ede9fe 100%);display:flex;align-items:center;justify-content:center;transition:opacity .5s,visibility .5s}
+.gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.gate-card{text-align:center;max-width:440px;padding:48px 40px;background:#fff;border-radius:28px;box-shadow:0 24px 80px rgba(99,102,241,.1),0 4px 16px rgba(0,0,0,.04);border:1px solid rgba(99,102,241,.08)}
+.gate-logo{font-size:32px;font-weight:900;letter-spacing:-1px;margin-bottom:8px;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.gate-subtitle{font-size:14px;color:#6b7280;margin-bottom:32px;line-height:1.6}
+.gate-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.12);border-radius:100px;font-size:11px;font-weight:700;color:#6366f1;letter-spacing:1px;text-transform:uppercase;margin-bottom:24px}
+.gate-tg-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 36px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:16px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;font-family:inherit}
+.gate-tg-btn:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(99,102,241,.3)}
+.gate-tg-btn svg{width:22px;height:22px;fill:#fff}
+.gate-or{margin:20px 0;font-size:12px;color:#9ca3af;font-weight:600}
+.gate-email-link{font-size:13px;color:#6366f1;font-weight:600;text-decoration:none}
+.gate-email-link:hover{text-decoration:underline}
+.gate-skip{display:block;margin-top:24px;font-size:12px;color:#c0c0c8;cursor:pointer;transition:color .2s}
+.gate-skip:hover{color:#6366f1}
+
+/* ===== LAYOUT ===== */
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh;opacity:0;transition:opacity .5s}
+.app.visible{opacity:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{background:#fff;border-right:1px solid #ebebef;padding:24px 0;position:fixed;top:0;left:0;bottom:0;width:280px;overflow-y:auto;z-index:100}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:rgba(0,0,0,.08);border-radius:2px}
+.sidebar-header{padding:0 24px 20px;border-bottom:1px solid #f0f0f4}
+.sidebar-logo{font-size:22px;font-weight:900;letter-spacing:-.5px;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar-label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#6366f1;margin-top:4px}
+.sidebar-section{padding:16px 16px 4px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9ca3af}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 24px;font-size:13px;font-weight:500;color:#6b7280;cursor:pointer;transition:all .2s;border-radius:0;position:relative}
+.sidebar-item:hover{background:#f8f8ff;color:#4b5563}
+.sidebar-item.active{background:linear-gradient(90deg,rgba(99,102,241,.08),transparent);color:#6366f1;font-weight:700}
+.sidebar-item.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:#6366f1;border-radius:0 2px 2px 0}
+.sidebar-item .item-icon{width:20px;text-align:center;font-size:14px;flex-shrink:0}
+.sidebar-item .item-badge{margin-left:auto;padding:2px 8px;background:rgba(99,102,241,.08);color:#6366f1;border-radius:100px;font-size:10px;font-weight:700}
+
+.sidebar-links{padding:16px 24px;border-top:1px solid #f0f0f4;margin-top:12px}
+.sidebar-links a{display:flex;align-items:center;gap:8px;font-size:12px;color:#9ca3af;text-decoration:none;padding:6px 0;font-weight:600;transition:color .2s}
+.sidebar-links a:hover{color:#6366f1}
+
+/* ===== MAIN ===== */
+.main{margin-left:280px;padding:32px 48px 64px}
+
+/* ===== TOPBAR ===== */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid #f0f0f4}
+.topbar-title{font-size:24px;font-weight:800;letter-spacing:-.5px;color:#0f0f1a}
+.topbar-actions{display:flex;gap:8px}
+.topbar-btn{padding:8px 16px;border-radius:10px;border:1px solid #e8e8ec;background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;color:#6b7280}
+.topbar-btn:hover{border-color:#6366f1;color:#6366f1;background:#f8f8ff}
+.topbar-btn.primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border-color:transparent}
+.topbar-btn.primary:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,.25)}
+.lang-switch{display:flex;border-radius:8px;overflow:hidden;border:1px solid #e8e8ec;background:#fafafa}
+.lang-switch button{padding:6px 12px;font-size:11px;font-weight:700;border:none;background:transparent;color:#999;cursor:pointer;font-family:inherit;transition:all .2s}
+.lang-switch button.active{background:#6366f1;color:#fff}
+
+/* ===== SECTION ===== */
+.section{display:none;animation:fadeIn .4s ease}
+.section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.section-header{margin-bottom:28px}
+.section-header h2{font-size:28px;font-weight:800;letter-spacing:-.5px;color:#0f0f1a;margin-bottom:6px}
+.section-header p{font-size:14px;color:#6b7280;line-height:1.7}
+
+/* ===== CARDS ===== */
+.dr-card{background:#fff;border:1px solid #ebebef;border-radius:16px;padding:24px;transition:all .3s}
+.dr-card:hover{box-shadow:0 8px 32px rgba(0,0,0,.04);border-color:rgba(99,102,241,.15)}
+.dr-card-grid{display:grid;gap:16px;margin-bottom:24px}
+.dr-card-grid.cols-2{grid-template-columns:1fr 1fr}
+.dr-card-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.dr-card-grid.cols-4{grid-template-columns:1fr 1fr 1fr 1fr}
+
+.dr-stat{text-align:center;padding:28px 20px}
+.dr-stat .stat-value{font-size:36px;font-weight:900;letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
+.dr-stat .stat-value.purple{color:#6366f1}
+.dr-stat .stat-value.green{color:#10b981}
+.dr-stat .stat-value.blue{color:#3b82f6}
+.dr-stat .stat-value.amber{color:#f59e0b}
+.dr-stat .stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#9ca3af}
+
+/* ===== TEAM CARDS ===== */
+.team-card{display:flex;gap:20px;align-items:flex-start;padding:24px}
+.team-card img{width:80px;height:80px;border-radius:50%;object-fit:cover;object-position:center top;flex-shrink:0;border:3px solid #e0e7ff}
+.team-name{font-size:16px;font-weight:800;color:#0f0f1a;margin-bottom:2px}
+.team-role{font-size:12px;font-weight:700;color:#6366f1;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.team-bio{font-size:13px;color:#6b7280;line-height:1.6}
+.team-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.team-tag{padding:3px 10px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.1);border-radius:100px;font-size:10px;font-weight:600;color:#6366f1}
+
+/* ===== TABLES ===== */
+.dr-table-wrap{overflow-x:auto;border-radius:12px;border:1px solid #ebebef;background:#fff}
+.dr-table{width:100%;border-collapse:collapse;font-size:13px}
+.dr-table thead{background:#f8f9fb;position:sticky;top:0}
+.dr-table th{padding:12px 16px;text-align:left;font-weight:700;color:#6b7280;font-size:11px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #ebebef;white-space:nowrap}
+.dr-table td{padding:10px 16px;border-bottom:1px solid #f0f0f4;white-space:nowrap}
+.dr-table tr:hover td{background:#fafbff}
+.dr-table .row-header{font-weight:700;color:#1a1a2e;position:sticky;left:0;background:#fff;min-width:180px;z-index:1}
+.dr-table tr:hover .row-header{background:#fafbff}
+.dr-table .row-sub{padding-left:32px;font-weight:500;color:#6b7280}
+.dr-table .row-total{font-weight:800;color:#0f0f1a;background:#f8f9fb!important}
+.dr-table .row-total td{border-top:2px solid #ebebef}
+.dr-table .num-positive{color:#10b981}
+.dr-table .num-negative{color:#ef4444}
+
+.currency-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid #e8e8ec;background:#fafafa;margin-bottom:16px}
+.currency-toggle button{padding:6px 16px;font-size:12px;font-weight:700;border:none;background:transparent;color:#999;cursor:pointer;font-family:inherit;transition:all .2s}
+.currency-toggle button.active{background:#6366f1;color:#fff}
+
+/* ===== DOWNLOAD BTN ===== */
+.download-row{display:flex;gap:8px;margin-top:16px}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;border:1px solid #e8e8ec;background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;color:#6b7280;text-decoration:none}
+.dl-btn:hover{border-color:#6366f1;color:#6366f1;background:#f8f8ff}
+
+/* ===== DOCUMENT LIST ===== */
+.doc-list{display:flex;flex-direction:column;gap:8px}
+.doc-item{display:flex;align-items:center;gap:12px;padding:14px 18px;background:#fff;border:1px solid #ebebef;border-radius:12px;transition:all .2s;cursor:default}
+.doc-item:hover{border-color:rgba(99,102,241,.2);box-shadow:0 4px 16px rgba(0,0,0,.03)}
+.doc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.doc-icon.pdf{background:rgba(239,68,68,.08);color:#ef4444}
+.doc-icon.xlsx{background:rgba(16,185,129,.08);color:#10b981}
+.doc-icon.link{background:rgba(59,130,246,.08);color:#3b82f6}
+.doc-icon.doc{background:rgba(99,102,241,.08);color:#6366f1}
+.doc-info{flex:1}
+.doc-name{font-size:14px;font-weight:600;color:#1a1a2e}
+.doc-meta{font-size:11px;color:#9ca3af;margin-top:2px}
+.doc-status{padding:4px 10px;border-radius:100px;font-size:10px;font-weight:700;letter-spacing:.5px}
+.doc-status.ready{background:rgba(16,185,129,.08);color:#059669}
+.doc-status.pending{background:rgba(245,158,11,.08);color:#d97706}
+.doc-status.na{background:#f5f5f8;color:#9ca3af}
+
+/* ===== INFO BLOCK ===== */
+.info-block{padding:20px 24px;background:linear-gradient(135deg,rgba(99,102,241,.04),rgba(139,92,246,.02));border:1px solid rgba(99,102,241,.1);border-radius:14px;margin-bottom:20px}
+.info-block h4{font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:8px}
+.info-block p,.info-block ul{font-size:13px;color:#6b7280;line-height:1.7}
+.info-block ul{padding-left:18px}
+.info-block ul li{margin-bottom:4px}
+
+/* ===== TRACTION TABLE ===== */
+.traction-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border:1px solid #ebebef;border-radius:12px;overflow:hidden;margin-top:16px}
+.traction-cell{padding:14px 10px;text-align:center;border-right:1px solid #f0f0f4;border-bottom:1px solid #f0f0f4}
+.traction-cell:nth-child(6n){border-right:none}
+.traction-cell.header{background:#f8f9fb;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.5px}
+.traction-cell .tv{font-size:16px;font-weight:800;color:#0f0f1a}
+.traction-cell .tl{font-size:10px;color:#9ca3af;font-weight:600;margin-top:2px}
+.traction-cell .tg{font-size:10px;font-weight:700;color:#10b981;margin-top:2px}
+
+/* ===== COMPARATIVE TABLE ===== */
+.comp-table{width:100%;border-collapse:collapse;font-size:12px}
+.comp-table th{padding:10px 12px;background:#f8f9fb;font-weight:700;color:#6b7280;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid #ebebef}
+.comp-table td{padding:10px 12px;border-bottom:1px solid #f0f0f4;color:#4b5563}
+.comp-table .check{color:#10b981;font-weight:700}
+.comp-table .partial{color:#f59e0b;font-weight:600}
+.comp-table .none{color:#d1d5db}
+.comp-table tr:hover td{background:#fafbff}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .main{margin-left:0;padding:20px 16px 48px}
+  .dr-card-grid.cols-3,.dr-card-grid.cols-4{grid-template-columns:1fr 1fr}
+  .dr-card-grid.cols-2{grid-template-columns:1fr}
+  .team-card{flex-direction:column;align-items:center;text-align:center}
+}
+
+@media print{
+  .sidebar,.gate,.topbar-actions{display:none!important}
+  .main{margin-left:0!important}
+  .section{display:block!important;page-break-before:always}
+}
+</style>
+</head>
+<body class="lang-ru">
+
+<!-- ===== GATE ===== -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <div class="gate-badge">🔒 <span class="ru">Виртуальный дата-рум</span><span class="en">Virtual Data Room</span></div>
+    <div class="gate-logo">Delever</div>
+    <div class="gate-subtitle">
+      <span class="ru">Доступ к дата-руму предоставляется по запросу. Отправьте заявку через Telegram — мы свяжемся с вами и предоставим доступ.</span>
+      <span class="en">Data room access is granted upon request. Submit your request via Telegram — we will contact you and provide access.</span>
+    </div>
+    <a href="https://t.me/delever_dataroom_bot" target="_blank" class="gate-tg-btn">
+      <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.95 7.47l-1.96 9.28c-.15.67-.54.83-1.09.52l-3.02-2.22-1.46 1.4c-.16.16-.3.3-.61.3l.22-3.06 5.56-5.02c.24-.22-.05-.33-.38-.13L8.69 13.3l-2.97-.93c-.65-.2-.66-.65.13-.96l11.6-4.47c.54-.2 1.01.13.83.96l-.33-.43z"/></svg>
+      <span class="ru">Запросить доступ</span><span class="en">Request Access</span>
+    </a>
+    <div class="gate-or"><span class="ru">или напишите</span><span class="en">or email us</span></div>
+    <a href="mailto:invest@delever.uz" class="gate-email-link">invest@delever.uz</a>
+    <div class="gate-skip" onclick="enterDataRoom()"><span class="ru">У меня есть доступ →</span><span class="en">I have access →</span></div>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div class="app" id="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Delever</div>
+    <div class="sidebar-label">Data Room</div>
+  </div>
+
+  <div class="sidebar-section"><span class="ru">Обзор</span><span class="en">Overview</span></div>
+  <div class="sidebar-item active" onclick="showSection('overview')">
+    <span class="item-icon">📊</span>
+    <span class="ru">Обзор компании</span><span class="en">Company Overview</span>
+  </div>
+
+  <div class="sidebar-section"><span class="ru">Компания</span><span class="en">Company</span></div>
+  <div class="sidebar-item" onclick="showSection('team')">
+    <span class="item-icon">👥</span>
+    <span class="ru">Команда</span><span class="en">Team</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('legal')">
+    <span class="item-icon">📋</span>
+    <span class="ru">Юридические документы</span><span class="en">Legal & Corporate</span>
+    <span class="item-badge">KYC</span>
+  </div>
+
+  <div class="sidebar-section"><span class="ru">Финансы</span><span class="en">Financials</span></div>
+  <div class="sidebar-item" onclick="showSection('pnl')">
+    <span class="item-icon">📈</span>
+    <span class="ru">P&L отчёт</span><span class="en">P&L Statement</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('balance')">
+    <span class="item-icon">⚖️</span>
+    <span class="ru">Баланс</span><span class="en">Balance Sheet</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('cashflow')">
+    <span class="item-icon">💰</span>
+    <span class="ru">Cash Flow</span><span class="en">Cash Flow</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('traction')">
+    <span class="item-icon">🚀</span>
+    <span class="ru">Трекшн и метрики</span><span class="en">Traction & Metrics</span>
+  </div>
+
+  <div class="sidebar-section"><span class="ru">Продукт</span><span class="en">Product</span></div>
+  <div class="sidebar-item" onclick="showSection('product')">
+    <span class="item-icon">🛠️</span>
+    <span class="ru">Описание продукта</span><span class="en">Product Description</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('techstack')">
+    <span class="item-icon">⚙️</span>
+    <span class="ru">Технологии</span><span class="en">Technology Stack</span>
+  </div>
+
+  <div class="sidebar-section"><span class="ru">Рынок</span><span class="en">Market</span></div>
+  <div class="sidebar-item" onclick="showSection('market')">
+    <span class="item-icon">🌍</span>
+    <span class="ru">Исследование рынка</span><span class="en">Market Research</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('competitive')">
+    <span class="item-icon">🏆</span>
+    <span class="ru">Конкурентный анализ</span><span class="en">Competitive Analysis</span>
+  </div>
+
+  <div class="sidebar-section"><span class="ru">Бизнес</span><span class="en">Business</span></div>
+  <div class="sidebar-item" onclick="showSection('revenue')">
+    <span class="item-icon">💎</span>
+    <span class="ru">Модель монетизации</span><span class="en">Revenue Model</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('strategy')">
+    <span class="item-icon">🎯</span>
+    <span class="ru">Стратегия роста</span><span class="en">Growth Strategy</span>
+  </div>
+  <div class="sidebar-item" onclick="showSection('press')">
+    <span class="item-icon">📰</span>
+    <span class="ru">Пресса и медиа</span><span class="en">Press & Media</span>
+  </div>
+
+  <div class="sidebar-links">
+    <a href="index.html"><span class="ru">📽️ Питч-дек</span><span class="en">📽️ Pitch Deck</span></a>
+    <a href="product.html"><span class="ru">🎯 Продуктовая презентация</span><span class="en">🎯 Product Deck</span></a>
+    <a href="onepager.html"><span class="ru">📋 One-Pager</span><span class="en">📋 One-Pager</span></a>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-title" id="topbarTitle"><span class="ru">Обзор компании</span><span class="en">Company Overview</span></div>
+  <div class="topbar-actions">
+    <div class="lang-switch">
+      <button onclick="setLang('ru')" class="active">RU</button>
+      <button onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== OVERVIEW ===== -->
+<div class="section active" id="sec-overview">
+  <div class="dr-card-grid cols-4" style="margin-bottom:24px">
+    <div class="dr-card dr-stat"><div class="stat-value purple">$50K+</div><div class="stat-label">MRR</div></div>
+    <div class="dr-card dr-stat"><div class="stat-value green">1,200+</div><div class="stat-label"><span class="ru">Заведений</span><span class="en">Locations</span></div></div>
+    <div class="dr-card dr-stat"><div class="stat-value blue">2.9M+</div><div class="stat-label"><span class="ru">Пользователей</span><span class="en">Users</span></div></div>
+    <div class="dr-card dr-stat"><div class="stat-value amber">~30K</div><div class="stat-label"><span class="ru">Заказов / день</span><span class="en">Orders / day</span></div></div>
+  </div>
+
+  <div class="info-block">
+    <h4><span class="ru">О компании</span><span class="en">About</span></h4>
+    <p><span class="ru">Delever — единая операционная система для ресторанов и ритейла, позволяющая запускать, управлять и масштабировать цифровые каналы продаж, интегрировать агрегаторы, управлять доставкой и подключаться к сети сервис-провайдеров. Платформа работает в 5 странах и обслуживает более 250 брендов.</span>
+    <span class="en">Delever is a unified operating system for restaurants and retail that enables businesses to launch, manage, and scale digital sales channels, integrate aggregators, manage delivery, and connect to a network of service providers. The platform operates in 5 countries and serves 250+ brands.</span></p>
+  </div>
+
+  <div class="section-header"><h2><span class="ru">Ключевые документы</span><span class="en">Key Documents</span></h2></div>
+  <div class="dr-card-grid cols-2">
+    <div class="dr-card" style="cursor:pointer" onclick="window.open('index.html','_blank')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="doc-icon link">📽️</div>
+        <div><div class="doc-name"><span class="ru">Питч-дек для инвесторов</span><span class="en">Investor Pitch Deck</span></div>
+        <div class="doc-meta"><span class="ru">Интерактивная презентация</span><span class="en">Interactive presentation</span></div></div>
+      </div>
+    </div>
+    <div class="dr-card" style="cursor:pointer" onclick="window.open('product.html','_blank')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="doc-icon link">🎯</div>
+        <div><div class="doc-name"><span class="ru">Продуктовая презентация</span><span class="en">Product Deck</span></div>
+        <div class="doc-meta"><span class="ru">Для клиентов и партнёров</span><span class="en">For clients & partners</span></div></div>
+      </div>
+    </div>
+    <div class="dr-card" style="cursor:pointer" onclick="window.open('onepager.html','_blank')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="doc-icon doc">📋</div>
+        <div><div class="doc-name">One-Pager</div>
+        <div class="doc-meta"><span class="ru">Краткая сводка</span><span class="en">Executive summary</span></div></div>
+      </div>
+    </div>
+    <div class="dr-card" style="cursor:pointer" onclick="window.open('https://youtu.be/nwf1SF6y9iY','_blank')">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="doc-icon" style="background:rgba(239,68,68,.08);color:#ef4444">▶️</div>
+        <div><div class="doc-name"><span class="ru">Видео-обзор продукта</span><span class="en">Product Video Review</span></div>
+        <div class="doc-meta">YouTube</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:32px"><h2><span class="ru">История и рост</span><span class="en">History & Growth</span></h2></div>
+  <div class="traction-grid">
+    <div class="traction-cell header"><span class="ru">Год</span><span class="en">Year</span></div>
+    <div class="traction-cell header"><span class="ru">Партнёры</span><span class="en">Partners</span></div>
+    <div class="traction-cell header"><span class="ru">Заказы</span><span class="en">Orders</span></div>
+    <div class="traction-cell header"><span class="ru">Пользователи</span><span class="en">Users</span></div>
+    <div class="traction-cell header">GMV</div>
+    <div class="traction-cell header"><span class="ru">Выручка</span><span class="en">Revenue</span></div>
+
+    <div class="traction-cell"><div class="tv">2020</div><div class="tl">Start</div></div>
+    <div class="traction-cell"><div class="tv">1</div></div>
+    <div class="traction-cell"><div class="tv">38.7K</div></div>
+    <div class="traction-cell"><div class="tv">25K</div></div>
+    <div class="traction-cell"><div class="tv">$258K</div></div>
+    <div class="traction-cell"><div class="tv">$1.6K</div></div>
+
+    <div class="traction-cell"><div class="tv">2021</div><div class="tg">9X</div></div>
+    <div class="traction-cell"><div class="tv">9</div></div>
+    <div class="traction-cell"><div class="tv">608K</div></div>
+    <div class="traction-cell"><div class="tv">275K</div></div>
+    <div class="traction-cell"><div class="tv">$4.1M</div></div>
+    <div class="traction-cell"><div class="tv">$15.2K</div></div>
+
+    <div class="traction-cell"><div class="tv">2022</div><div class="tg">4X</div></div>
+    <div class="traction-cell"><div class="tv">23</div></div>
+    <div class="traction-cell"><div class="tv">1.7M</div></div>
+    <div class="traction-cell"><div class="tv">590K</div></div>
+    <div class="traction-cell"><div class="tv">$11.3M</div></div>
+    <div class="traction-cell"><div class="tv">$63.5K</div></div>
+
+    <div class="traction-cell"><div class="tv">2023</div><div class="tg">2.3X</div></div>
+    <div class="traction-cell"><div class="tv">55</div></div>
+    <div class="traction-cell"><div class="tv">2.1M</div></div>
+    <div class="traction-cell"><div class="tv">1.58M</div></div>
+    <div class="traction-cell"><div class="tv">$14.3M</div></div>
+    <div class="traction-cell"><div class="tv">$116.5K</div></div>
+
+    <div class="traction-cell"><div class="tv">2024</div><div class="tg">2.1X</div></div>
+    <div class="traction-cell"><div class="tv">128</div></div>
+    <div class="traction-cell"><div class="tv">2.4M</div></div>
+    <div class="traction-cell"><div class="tv">2M</div></div>
+    <div class="traction-cell"><div class="tv">$44.3M</div></div>
+    <div class="traction-cell"><div class="tv">$234K</div></div>
+
+    <div class="traction-cell"><div class="tv">2025</div><div class="tg">2.2X</div></div>
+    <div class="traction-cell"><div class="tv">250+</div></div>
+    <div class="traction-cell"><div class="tv">6.75M</div></div>
+    <div class="traction-cell"><div class="tv">2.8M</div></div>
+    <div class="traction-cell"><div class="tv">$85M</div></div>
+    <div class="traction-cell"><div class="tv">$475K</div></div>
+  </div>
+
+  <div class="dr-card-grid cols-4" style="margin-top:24px">
+    <div class="dr-card dr-stat"><div class="stat-value green">~1%</div><div class="stat-label">Churn</div></div>
+    <div class="dr-card dr-stat"><div class="stat-value purple">3.7x</div><div class="stat-label">LTV / CAC</div></div>
+    <div class="dr-card dr-stat"><div class="stat-value blue">5</div><div class="stat-label"><span class="ru">Стран</span><span class="en">Countries</span></div></div>
+    <div class="dr-card dr-stat"><div class="stat-value amber">$85M</div><div class="stat-label">GMV 2025</div></div>
+  </div>
+</div>
+
+<!-- ===== TEAM ===== -->
+<div class="section" id="sec-team">
+  <div class="section-header">
+    <h2><span class="ru">Команда основателей</span><span class="en">Founding Team</span></h2>
+    <p><span class="ru">Ключевые лица компании с опытом в ресторанном бизнесе, логистике и IT</span><span class="en">Key people with experience in restaurant business, logistics and IT</span></p>
+  </div>
+
+  <div class="dr-card-grid cols-2">
+    <div class="dr-card team-card">
+      <img src="img/fakhriddin.png" alt="Fakhriddin Yusupov">
+      <div>
+        <div class="team-name">Fakhriddin Yusupov</div>
+        <div class="team-role">CEO & Founder</div>
+        <div class="team-bio"><span class="ru">15+ лет опыта в индустрии. Ex-MaxWay (Head of Call Center), Newmax (MyTaxi, Express24), Oson. Огромный опыт в управлении сетью ресторанов, продажах и автоматизации доставки.</span><span class="en">15+ years of industry experience. Ex-MaxWay (Head of Call Center), Newmax (MyTaxi, Express24), Oson. Extensive experience in restaurant chain management, sales and delivery automation.</span></div>
+        <div class="team-tags">
+          <span class="team-tag">Ex-MaxWay</span>
+          <span class="team-tag">Ex-Newmax</span>
+          <span class="team-tag">ДонГАУ Bachelor</span>
+          <span class="team-tag">ALMAU MBA</span>
+        </div>
+      </div>
+    </div>
+    <div class="dr-card team-card">
+      <img src="img/azizbek.png" alt="Azizbek Baxodirov">
+      <div>
+        <div class="team-name">Azizbek Baxodirov</div>
+        <div class="team-role">COO & Co-founder</div>
+        <div class="team-bio"><span class="ru">7+ лет опыта. Ключевая роль в формировании стратегии развития бизнеса. Обеспечил значительный рост выручки и укрепление позиций компании на рынке.</span><span class="en">7+ years of experience. Crucial role in shaping business development strategy. Delivered significant revenue growth and strengthened the company's market position.</span></div>
+        <div class="team-tags">
+          <span class="team-tag">UDEVS</span>
+          <span class="team-tag">Delever</span>
+          <span class="team-tag">CBDO</span>
+        </div>
+      </div>
+    </div>
+    <div class="dr-card team-card">
+      <img src="img/abdullo.png" alt="Abdullo Xidoyatov">
+      <div>
+        <div class="team-name">Abdullo Xidoyatov</div>
+        <div class="team-role">CTO & Co-founder</div>
+        <div class="team-bio"><span class="ru">Ex-MyTaxi — создал первый онлайн такси-сервис. Сильный технический лидер, руководил множеством проектов и команд разработки. 7 лет управления IT-командами в Udevs.</span><span class="en">Ex-MyTaxi — built the first online taxi service. Strong technical leader, led multiple projects & dev teams. 7 years managing teams & IT outsourcing at Udevs.</span></div>
+        <div class="team-tags">
+          <span class="team-tag">Ex-MyTaxi</span>
+          <span class="team-tag">UDEVS</span>
+          <span class="team-tag">Delever</span>
+        </div>
+      </div>
+    </div>
+    <div class="dr-card team-card">
+      <img src="img/madiyar.png" alt="Madiyar Bakbergenov">
+      <div>
+        <div class="team-name">Madiyar Bakbergenov</div>
+        <div class="team-role">Advisor</div>
+        <div class="team-bio"><span class="ru">Ex-Kwaaka, Chocofood, Vlife. CEO Pandev. 10+ лет опыта в стартапах и FoodTech индустрии.</span><span class="en">Ex-Kwaaka, Chocofood, Vlife. CEO Pandev. 10+ years in startups & foodtech.</span></div>
+        <div class="team-tags">
+          <span class="team-tag">Ex-Kwaaka</span>
+          <span class="team-tag">Ex-Chocofood</span>
+          <span class="team-tag">CEO Pandev</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:32px">
+    <h2><span class="ru">Организационная структура</span><span class="en">Organization Structure</span></h2>
+  </div>
+  <div class="dr-card" style="text-align:center;padding:32px">
+    <a href="https://miro.com/app/board/uXjVMx4DLpM=/" target="_blank" class="dl-btn primary" style="font-size:14px;padding:12px 24px;border-color:transparent;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;text-decoration:none">
+      <span class="ru">🔗 Открыть оргструктуру в Miro</span><span class="en">🔗 Open org structure in Miro</span>
+    </a>
+  </div>
+</div>
+
+<!-- ===== LEGAL ===== -->
+<div class="section" id="sec-legal">
+  <div class="section-header">
+    <h2><span class="ru">Юридические и корпоративные документы</span><span class="en">Legal & Corporate Documents</span></h2>
+    <p><span class="ru">Статус документов по KYC чеклисту IT Park Ventures</span><span class="en">Document status per IT Park Ventures KYC checklist</span></p>
+  </div>
+
+  <div class="info-block">
+    <h4><span class="ru">Идентификация</span><span class="en">Identification</span></h4>
+    <p><span class="ru"><strong>Компания:</strong> "DELEVER" MCHJ (ООО) · Узбекистан<br>
+    <strong>Деятельность:</strong> Единая операционная платформа для ресторанов и ритейла<br>
+    <strong>Ключевые лица:</strong> Fakhriddin Yusupov (CEO), Azizbek Baxodirov (COO), Abdullo Xidoyatov (CTO)</span>
+    <span class="en"><strong>Company:</strong> "DELEVER" MCHJ (LLC) · Uzbekistan<br>
+    <strong>Activity:</strong> Unified operating platform for restaurants and retail<br>
+    <strong>Key people:</strong> Fakhriddin Yusupov (CEO), Azizbek Baxodirov (COO), Abdullo Xidoyatov (CTO)</span></p>
+  </div>
+
+  <div class="section-header"><h2 style="font-size:20px"><span class="ru">Учредительные документы</span><span class="en">Incorporation Documents</span></h2></div>
+  <div class="doc-list">
+    <div class="doc-item">
+      <div class="doc-icon pdf">📄</div>
+      <div class="doc-info"><div class="doc-name"><span class="ru">Свидетельство о регистрации</span><span class="en">Certificate of Incorporation</span></div><div class="doc-meta"><span class="ru">Сертификат регистрации компании</span><span class="en">Company registration certificate</span></div></div>
+      <div class="doc-status pending"><span class="ru">Ожидается</span><span class="en">Pending</span></div>
+    </div>
+    <div class="doc-item">
+      <div class="doc-icon pdf">📄</div>
+      <div class="doc-info"><div class="doc-name"><span class="ru">Устав компании</span><span class="en">Articles of Association / Charter</span></div></div>
+      <div class="doc-status pending"><span class="ru">Ожидается</span><span class="en">Pending</span></div>
+    </div>
+    <div class="doc-item">
+      <div class="doc-icon pdf">📄</div>
+      <div class="doc-info"><div class="doc-name"><span class="ru">Реестр участников / акционеров</span><span class="en">Shareholders Register</span></div></div>
+      <div class="doc-status pending"><span class="ru">Ожидается</span><span class="en">Pending</span></div>
+    </div>
+    <div class="doc-item">
+      <div class="doc-icon doc">📋</div>
+      <div class="doc-info"><div class="doc-name">Cap Table</div><div class="doc-meta"><span class="ru">По форме Приложения А (ITPV)</span><span class="en">Per Appendix A format (ITPV)</span></div></div>
+      <div class="doc-status pending"><span class="ru">Ожидается</span><span class="en">Pending</span></div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px"><h2 style="font-size:20px"><span class="ru">Интеллектуальная собственность</span><span class="en">Intellectual Property</span></h2></div>
+  <div class="doc-list">
+    <div class="doc-item">
+      <div class="doc-icon pdf">📄</div>
+      <div class="doc-info">
+        <div class="doc-name"><span class="ru">Свидетельство о регистрации ПО — DELEVER</span><span class="en">Software Registration Certificate — DELEVER</span></div>
+        <div class="doc-meta"><span class="ru">Минюст РУз · № DGU 40255 · 19.06.2024 · Правообладатель: DELEVER MCHJ</span><span class="en">Ministry of Justice RUz · No. DGU 40255 · 19.06.2024 · Owner: DELEVER MCHJ</span></div>
+      </div>
+      <div class="doc-status ready"><span class="ru">Готов</span><span class="en">Ready</span></div>
+    </div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px"><h2 style="font-size:20px"><span class="ru">Инвестиции</span><span class="en">Investments</span></h2></div>
+  <div class="info-block">
+    <p><span class="ru"><strong>2024:</strong> Привлечены инвестиции от Aloqa Ventures при оценке $4M. Компания перешла от аутсорс-разработки к собственной продуктовой команде.</span>
+    <span class="en"><strong>2024:</strong> Raised investment from Aloqa Ventures at $4M valuation. Company transitioned from outsourced development to an in-house product team.</span></p>
+  </div>
+</div>
+
+<!-- ===== P&L ===== -->
+<div class="section" id="sec-pnl">
+  <div class="section-header">
+    <h2><span class="ru">Отчёт о прибылях и убытках</span><span class="en">Profit & Loss Statement</span></h2>
+    <p><span class="ru">P&L 2024–2025 (факт) и 2026–2027 (план), помесячная разбивка</span><span class="en">P&L 2024–2025 (actual) and 2026–2027 (plan), monthly breakdown</span></p>
+  </div>
+
+  <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+    <div class="currency-toggle" id="pnlPeriod" style="margin-bottom:0">
+      <button class="active" onclick="setPnlPeriod('fact',this)"><span class="ru">Факт 2024-25</span><span class="en">Actual 2024-25</span></button>
+      <button onclick="setPnlPeriod('plan',this)"><span class="ru">План 2026-27</span><span class="en">Plan 2026-27</span></button>
+    </div>
+  </div>
+
+  <div class="dr-table-wrap" style="max-height:70vh;overflow:auto">
+    <table class="dr-table" id="pnlTable">
+      <thead id="pnlHead"></thead>
+      <tbody id="pnlBody"></tbody>
+    </table>
+  </div>
+  <div class="download-row">
+    <a class="dl-btn" href="javascript:void(0)" onclick="alert('Excel файл будет доступен для скачивания')">📥 Excel</a>
+    <a class="dl-btn" href="javascript:void(0)" onclick="window.print()">📄 PDF</a>
+  </div>
+</div>
+
+<!-- ===== BALANCE ===== -->
+<div class="section" id="sec-balance">
+  <div class="section-header">
+    <h2><span class="ru">Балансовый отчёт</span><span class="en">Balance Sheet</span></h2>
+    <p><span class="ru">Баланс на 2025 год в UZS и USD</span><span class="en">Balance as of 2025 in UZS and USD</span></p>
+  </div>
+
+  <div class="dr-table-wrap">
+    <table class="dr-table">
+      <thead><tr><th><span class="ru">Статья</span><span class="en">Item</span></th><th>UZS</th><th>USD</th></tr></thead>
+      <tbody>
+        <tr class="row-total"><td class="row-header"><span class="ru">Оборотные активы</span><span class="en">Current Assets</span></td><td>1,987,007,332</td><td>$162,869</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Дебиторская задолженность</span><span class="en">Accounts Receivable</span></td><td>521,467,254</td><td>$42,743</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Денежные средства</span><span class="en">Cash</span></td><td>225,540,078</td><td>$18,487</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Депозит (Aloqabank)</span><span class="en">Deposit (Aloqabank)</span></td><td>1,200,000,000</td><td>$98,361</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Выданные займы (до 1 года)</span><span class="en">Loans Issued (up to 1 year)</span></td><td>40,000,000</td><td>$3,279</td></tr>
+        <tr class="row-total"><td class="row-header"><span class="ru">Внеоборотные активы</span><span class="en">Non-current Assets</span></td><td>117,152,430</td><td>$9,603</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Инвестиции (Dubai)</span><span class="en">Investments (Dubai)</span></td><td>113,996,796</td><td>$9,344</td></tr>
+        <tr class="row-total" style="background:linear-gradient(90deg,rgba(99,102,241,.04),transparent)"><td class="row-header" style="color:#6366f1"><span class="ru">ИТОГО АКТИВЫ</span><span class="en">TOTAL ASSETS</span></td><td style="font-weight:900;color:#6366f1">2,104,159,762</td><td style="font-weight:900;color:#6366f1">$172,472</td></tr>
+        <tr><td colspan="3" style="height:12px;border:none"></td></tr>
+        <tr class="row-total"><td class="row-header"><span class="ru">Краткосрочные обязательства</span><span class="en">Short-term Liabilities</span></td><td>468,841,104</td><td>$38,430</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Кредиторская задолженность</span><span class="en">Accounts Payable</span></td><td>468,841,104</td><td>$38,430</td></tr>
+        <tr class="row-total"><td class="row-header"><span class="ru">Долгосрочные обязательства</span><span class="en">Long-term Liabilities</span></td><td>0</td><td>$0</td></tr>
+        <tr class="row-total" style="background:linear-gradient(90deg,rgba(239,68,68,.04),transparent)"><td class="row-header" style="color:#ef4444"><span class="ru">ИТОГО ОБЯЗАТЕЛЬСТВА</span><span class="en">TOTAL LIABILITIES</span></td><td style="font-weight:900">468,841,104</td><td style="font-weight:900">$38,430</td></tr>
+        <tr><td colspan="3" style="height:12px;border:none"></td></tr>
+        <tr class="row-total"><td class="row-header"><span class="ru">Собственный капитал</span><span class="en">Equity</span></td><td>1,635,318,658</td><td>$134,043</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Вклады учредителей</span><span class="en">Founder Contributions</span></td><td>1,247,233,476</td><td>$102,232</td></tr>
+        <tr><td class="row-header row-sub"><span class="ru">Нераспределённая прибыль</span><span class="en">Retained Earnings</span></td><td>388,085,182</td><td>$31,810</td></tr>
+        <tr class="row-total" style="background:linear-gradient(90deg,rgba(16,185,129,.04),transparent)"><td class="row-header" style="color:#10b981"><span class="ru">ОБЯЗАТЕЛЬСТВА + КАПИТАЛ</span><span class="en">LIABILITIES + EQUITY</span></td><td style="font-weight:900;color:#10b981">2,104,159,762</td><td style="font-weight:900;color:#10b981">$172,472</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="download-row">
+    <a class="dl-btn" href="javascript:void(0)" onclick="alert('Excel файл будет доступен для скачивания')">📥 Excel</a>
+    <a class="dl-btn" href="javascript:void(0)" onclick="window.print()">📄 PDF</a>
+  </div>
+</div>
+
+<!-- ===== CASH FLOW ===== -->
+<div class="section" id="sec-cashflow">
+  <div class="section-header">
+    <h2>Cash Flow 2026</h2>
+    <p><span class="ru">Отчёт о движении денежных средств, понедельная разбивка по регионам</span><span class="en">Cash flow statement, weekly breakdown by region</span></p>
+  </div>
+  <div class="info-block">
+    <p><span class="ru">Детальный Cash Flow доступен в Excel-файле с понедельной разбивкой по регионам (UZ, KZ, KG, GE) включая Inflow, Outflow и Cash Gap.</span>
+    <span class="en">Detailed Cash Flow is available in Excel file with weekly breakdown by region (UZ, KZ, KG, GE) including Inflow, Outflow and Cash Gap.</span></p>
+  </div>
+  <div class="download-row">
+    <a class="dl-btn" href="javascript:void(0)" onclick="alert('Excel файл будет доступен для скачивания')">📥 <span class="ru">Скачать Cash Flow (Excel)</span><span class="en">Download Cash Flow (Excel)</span></a>
+  </div>
+</div>
+
+<!-- ===== TRACTION ===== -->
+<div class="section" id="sec-traction">
+  <div class="section-header">
+    <h2><span class="ru">Трекшн и метрики</span><span class="en">Traction & Metrics</span></h2>
+    <p><span class="ru">Ключевые показатели эффективности платформы</span><span class="en">Key platform performance indicators</span></p>
+  </div>
+
+  <div class="dr-card-grid cols-4" style="margin-bottom:24px">
+    <div class="dr-card dr-stat"><div class="stat-value purple">$85M</div><div class="stat-label">GMV 2025</div></div>
+    <div class="dr-card dr-stat"><div class="stat-value green">2.2x</div><div class="stat-label"><span class="ru">Рост YoY</span><span class="en">YoY Growth</span></div></div>
+    <div class="dr-card dr-stat"><div class="stat-value blue">~1%</div><div class="stat-label">Revenue Churn</div></div>
+    <div class="dr-card dr-stat"><div class="stat-value amber">3.7x</div><div class="stat-label">LTV / CAC</div></div>
+  </div>
+
+  <div class="section-header"><h2 style="font-size:20px"><span class="ru">MRR по регионам (план 2026)</span><span class="en">MRR by Region (plan 2026)</span></h2></div>
+  <div class="dr-table-wrap">
+    <table class="dr-table">
+      <thead><tr><th><span class="ru">Регион</span><span class="en">Region</span></th><th>Jan</th><th>Mar</th><th>Jun</th><th>Sep</th><th>Dec</th></tr></thead>
+      <tbody>
+        <tr><td class="row-header">🇺🇿 UZB</td><td>420.8M</td><td>462.7M</td><td>526.7M</td><td>556.8M</td><td>587.4M</td></tr>
+        <tr><td class="row-header">🇰🇿 KZ</td><td>196.0M</td><td>219.6M</td><td>255.6M</td><td>292.5M</td><td>330.2M</td></tr>
+        <tr><td class="row-header">🇰🇬 KG</td><td>—</td><td>—</td><td>37.1M</td><td>75.0M</td><td>113.9M</td></tr>
+        <tr><td class="row-header">🇬🇪 GE</td><td>2.1M</td><td>8.5M</td><td>25.9M</td><td>52.5M</td><td>79.7M</td></tr>
+        <tr><td class="row-header">🇦🇪 AE</td><td>—</td><td>—</td><td>10.0M</td><td>13.3M</td><td>17.7M</td></tr>
+        <tr class="row-total"><td class="row-header"><strong>Total MRR</strong></td><td><strong>623.8M</strong></td><td><strong>696.9M</strong></td><td><strong>863.2M</strong></td><td><strong>998.9M</strong></td><td><strong>1,139.0M</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-header" style="margin-top:28px"><h2 style="font-size:20px"><span class="ru">Unit Economics</span><span class="en">Unit Economics</span></h2></div>
+  <div class="info-block">
+    <p><span class="ru">Детальные помесячные расчёты Unit Economics (LTV, CAC, ARPU, Payback Period, Churn) будут добавлены.</span>
+    <span class="en">Detailed monthly Unit Economics calculations (LTV, CAC, ARPU, Payback Period, Churn) will be added.</span></p>
+  </div>
+</div>
+
+<!-- ===== PRODUCT ===== -->
+<div class="section" id="sec-product">
+  <div class="section-header">
+    <h2><span class="ru">Описание продукта</span><span class="en">Product Description</span></h2>
+    <p><span class="ru">Delever — Growth Operating System & Infrastructure Platform</span><span class="en">Delever — Growth Operating System & Infrastructure Platform</span></p>
+  </div>
+
+  <div class="info-block">
+    <p><span class="ru">Delever — единая операционная система, позволяющая ресторанам и ритейлу <strong>запускать, управлять и масштабировать цифровые каналы продаж</strong>, интегрировать агрегаторы, управлять доставкой и подключаться к сети сервис-провайдеров.</span>
+    <span class="en">Delever is a unified operating system that enables restaurants and retail to <strong>launch, manage, and scale digital sales channels</strong>, integrate aggregators, manage delivery, and connect to a network of service providers.</span></p>
+  </div>
+
+  <div class="dr-card-grid cols-3" style="margin-top:20px">
+    <div class="dr-card"><div style="font-size:24px;margin-bottom:10px">🛒</div><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px"><span class="ru">Каналы продаж</span><span class="en">Sales Channels</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Telegram-бот, мобильное приложение, веб-сайт, QR-меню, киоски, колл-центр</span><span class="en">Telegram bot, mobile app, website, QR menu, kiosks, call center</span></div></div>
+    <div class="dr-card"><div style="font-size:24px;margin-bottom:10px">🔗</div><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px"><span class="ru">Интеграция агрегаторов</span><span class="en">Aggregator Integration</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Единый поток заказов, синхронизация меню, автоприём заказов</span><span class="en">Unified order flow, menu sync, auto-accept orders</span></div></div>
+    <div class="dr-card"><div style="font-size:24px;margin-bottom:10px">🚚</div><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px"><span class="ru">Управление доставкой</span><span class="en">Delivery Management</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Курьерское приложение, диспетчерская, маршрутизация, трекинг</span><span class="en">Courier app, dispatch, routing, real-time tracking</span></div></div>
+    <div class="dr-card"><div style="font-size:24px;margin-bottom:10px">⚡</div><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px"><span class="ru">Центр управления заказами</span><span class="en">Order Management</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Все заказы из всех каналов в одной системе, синхронизация с POS</span><span class="en">All orders from all channels in one system, POS sync</span></div></div>
+    <div class="dr-card"><div style="font-size:24px;margin-bottom:10px">📊</div><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px">CRM & <span class="ru">Маркетинг</span><span class="en">Marketing</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">База клиентов, лояльность, промоакции, автоматизированные кампании</span><span class="en">Customer database, loyalty, promotions, automated campaigns</span></div></div>
+    <div class="dr-card"><div style="font-size:24px;margin-bottom:10px">🏪</div><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:6px"><span class="ru">Маркетплейс партнёров</span><span class="en">Partner Marketplace</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Курьерские, платёжные и коммуникационные сервисы внутри платформы</span><span class="en">Courier, payment, communication services inside the platform</span></div></div>
+  </div>
+
+  <div class="section-header" style="margin-top:28px"><h2 style="font-size:20px"><span class="ru">Документация</span><span class="en">Documentation</span></h2></div>
+  <div class="doc-list">
+    <div class="doc-item" onclick="window.open('https://delever.gitbook.io/delever','_blank')" style="cursor:pointer">
+      <div class="doc-icon link">📚</div>
+      <div class="doc-info"><div class="doc-name"><span class="ru">Админ панель — GitBook</span><span class="en">Admin Panel — GitBook</span></div><div class="doc-meta"><span class="ru">Полная документация продукта</span><span class="en">Full product documentation</span></div></div>
+      <div class="doc-status ready"><span class="ru">Готов</span><span class="en">Ready</span></div>
+    </div>
+    <div class="doc-item" onclick="window.open('https://youtu.be/nwf1SF6y9iY','_blank')" style="cursor:pointer">
+      <div class="doc-icon" style="background:rgba(239,68,68,.08);color:#ef4444">▶️</div>
+      <div class="doc-info"><div class="doc-name"><span class="ru">Видео-обзор продукта</span><span class="en">Product Video Review</span></div><div class="doc-meta">YouTube</div></div>
+      <div class="doc-status ready"><span class="ru">Готов</span><span class="en">Ready</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TECH STACK ===== -->
+<div class="section" id="sec-techstack">
+  <div class="section-header">
+    <h2><span class="ru">Технологический стек</span><span class="en">Technology Stack</span></h2>
+    <p><span class="ru">Микросервисная архитектура, 13+ интеграций</span><span class="en">Microservice architecture, 13+ integrations</span></p>
+  </div>
+
+  <div class="dr-card-grid cols-3">
+    <div class="dr-card"><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px"><span class="ru">Генераторы трафика</span><span class="en">Traffic Generators</span></div><div style="font-size:12px;color:#6b7280;line-height:1.8">Telegram Bot (Node.js)<br>Mobile App (Flutter)<br>Website (Next.js)<br>Kiosk (Next.js)<br>QR Menu (Next.js)</div></div>
+    <div class="dr-card"><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px"><span class="ru">Платформа (микросервисы)</span><span class="en">Platform (microservices)</span></div><div style="font-size:12px;color:#6b7280;line-height:1.8">Consumer Service (Go)<br>Order Service (Go)<br>Courier Service (Go)<br>CRM Service (Go)<br>Catalog Service (Node.js)<br>Payment Service (Node.js)<br>SMS / Fare / User (Go)</div></div>
+    <div class="dr-card"><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px"><span class="ru">Инфраструктура</span><span class="en">Infrastructure</span></div><div style="font-size:12px;color:#6b7280;line-height:1.8">API Gateway (Golang)<br>Load Balancer (HAProxy)<br>PostgreSQL<br>MongoDB<br>Redis</div></div>
+  </div>
+
+  <div class="dr-card-grid cols-3" style="margin-top:16px">
+    <div class="dr-card"><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px"><span class="ru">POS-системы</span><span class="en">POS Systems</span></div><div style="font-size:12px;color:#6b7280;line-height:1.8">IIKO · Syrve · R-Keeper<br>Jowi · Poster · Paloma365<br>Neon Alisa · Yaros · Clopos<br>Alipos · yTimes · DODO IS</div></div>
+    <div class="dr-card"><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px"><span class="ru">Платёжные системы</span><span class="en">Payment Systems</span></div><div style="font-size:12px;color:#6b7280;line-height:1.8">Payme · Click · Uzum Bank<br>Epay · Kaspi · Atmos<br>Anor Bank · TipTop Pay<br>Magnati</div></div>
+    <div class="dr-card"><div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:10px"><span class="ru">Агрегаторы и доставка</span><span class="en">Aggregators & Delivery</span></div><div style="font-size:12px;color:#6b7280;line-height:1.8">Yandex Eats · Wolt · Glovo<br>Uzum Tezkor · Chocofood<br>Foody · Yandex GO<br>Wolt Drive · Millenium · Noor</div></div>
+  </div>
+</div>
+
+<!-- ===== MARKET ===== -->
+<div class="section" id="sec-market">
+  <div class="section-header">
+    <h2><span class="ru">Исследование рынка</span><span class="en">Market Research</span></h2>
+  </div>
+
+  <div class="dr-card-grid cols-3" style="margin-bottom:24px">
+    <div class="dr-card dr-stat"><div class="stat-value purple">$300B+</div><div class="stat-label">TAM</div></div>
+    <div class="dr-card dr-stat"><div class="stat-value blue">$5-15B</div><div class="stat-label">SAM</div></div>
+    <div class="dr-card dr-stat"><div class="stat-value green">1-3%</div><div class="stat-label">SOM</div></div>
+  </div>
+
+  <div class="info-block">
+    <h4><span class="ru">Драйверы роста рынка</span><span class="en">Market Growth Drivers</span></h4>
+    <ul>
+      <li><span class="ru">Рост онлайн-заказов на развивающихся рынках: 20–30% ежегодно</span><span class="en">Online order growth in emerging markets: 20–30% annually</span></li>
+      <li><span class="ru">Давление на маржу из-за комиссий агрегаторов (20–35%)</span><span class="en">Margin pressure from aggregator commissions (20–35%)</span></li>
+      <li><span class="ru">Цифровизация SMB</span><span class="en">SMB digitalization</span></li>
+      <li><span class="ru">Рост проникновения мобильных приложений и мессенджеров</span><span class="en">Increased mobile app and messaging platform adoption</span></li>
+    </ul>
+  </div>
+
+  <div class="info-block" style="margin-top:16px">
+    <h4><span class="ru">Экономика заказа</span><span class="en">Order Economics</span></h4>
+    <p><span class="ru"><strong>Комиссия агрегаторов:</strong> 20–35% за заказ<br><strong>Прямые каналы:</strong> 10–18% эффективная стоимость<br><strong>Потенциальное улучшение маржи:</strong> до 50% за заказ</span>
+    <span class="en"><strong>Aggregator commissions:</strong> 20–35% per order<br><strong>Direct channels:</strong> 10–18% effective cost<br><strong>Potential margin improvement:</strong> up to 50% per order</span></p>
+  </div>
+</div>
+
+<!-- ===== COMPETITIVE ===== -->
+<div class="section" id="sec-competitive">
+  <div class="section-header">
+    <h2><span class="ru">Конкурентный анализ</span><span class="en">Competitive Analysis</span></h2>
+  </div>
+  <div class="dr-table-wrap">
+    <table class="comp-table">
+      <thead><tr><th><span class="ru">Категория</span><span class="en">Category</span></th><th><span class="ru">Агрегаторы</span><span class="en">Aggregators</span></th><th>POS</th><th><span class="ru">Интеграторы</span><span class="en">Integrators</span></th><th style="background:rgba(99,102,241,.06)">Delever</th></tr></thead>
+      <tbody>
+        <tr><td><span class="ru">Каналы продаж</span><span class="en">Sales Channels</span></td><td class="partial"><span class="ru">Только платформа</span><span class="en">Platform only</span></td><td class="none">—</td><td class="none">—</td><td class="check"><span class="ru">Прямые + агрегаторы</span><span class="en">Direct + aggregators</span></td></tr>
+        <tr><td><span class="ru">Владение клиентом</span><span class="en">Customer Ownership</span></td><td class="partial"><span class="ru">Ограничено</span><span class="en">Limited</span></td><td class="partial"><span class="ru">Частично</span><span class="en">Partial</span></td><td class="none">—</td><td class="check"><span class="ru">Полное</span><span class="en">Full</span></td></tr>
+        <tr><td><span class="ru">Управление доставкой</span><span class="en">Delivery Management</span></td><td class="partial"><span class="ru">Частично</span><span class="en">Partial</span></td><td class="partial"><span class="ru">Ограничено</span><span class="en">Limited</span></td><td class="partial"><span class="ru">Ограничено</span><span class="en">Limited</span></td><td class="check"><span class="ru">Полное</span><span class="en">Full</span></td></tr>
+        <tr><td><span class="ru">Интеграции</span><span class="en">Integrations</span></td><td class="partial"><span class="ru">Ограничено</span><span class="en">Limited</span></td><td class="partial"><span class="ru">Ограничено</span><span class="en">Limited</span></td><td class="check"><span class="ru">Основное</span><span class="en">Core</span></td><td class="check"><span class="ru">Обширная экосистема</span><span class="en">Extensive ecosystem</span></td></tr>
+        <tr><td><span class="ru">Аналитика</span><span class="en">Analytics</span></td><td class="partial"><span class="ru">Базовая</span><span class="en">Basic</span></td><td class="partial"><span class="ru">Операционная</span><span class="en">Operational</span></td><td class="partial"><span class="ru">Ограничено</span><span class="en">Limited</span></td><td class="check"><span class="ru">Сквозная</span><span class="en">End-to-end</span></td></tr>
+        <tr><td><span class="ru">Влияние на бизнес</span><span class="en">Business Impact</span></td><td class="partial"><span class="ru">Высокая зависимость</span><span class="en">High dependency</span></td><td class="partial"><span class="ru">Ключевая функция</span><span class="en">Core function</span></td><td class="none"><span class="ru">Поддержка</span><span class="en">Supporting</span></td><td class="check"><span class="ru">Центр управления</span><span class="en">Central control layer</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== REVENUE MODEL ===== -->
+<div class="section" id="sec-revenue">
+  <div class="section-header">
+    <h2><span class="ru">Модель монетизации</span><span class="en">Revenue Model</span></h2>
+  </div>
+
+  <div class="info-block">
+    <h4><span class="ru">Текущая модель</span><span class="en">Current Model</span></h4>
+    <ul>
+      <li><strong>Deposit Fee:</strong> $500</li>
+      <li><strong><span class="ru">Подписки:</span><span class="en">Subscriptions:</span></strong> $100–$500/<span class="ru">мес</span><span class="en">mo</span></li>
+      <li><strong>Transaction Fees:</strong> $0.15 <span class="ru">за заказ</span><span class="en">per order</span></li>
+      <li><strong><span class="ru">Доп. модули:</span><span class="en">Add-on Modules:</span></strong> $9–$199</li>
+    </ul>
+  </div>
+
+  <div class="dr-card-grid cols-4" style="margin-top:20px">
+    <div class="dr-card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#6b7280">Start</div><div style="font-size:32px;font-weight:900;color:#6366f1;margin:12px 0">$100</div><div style="font-size:11px;color:#9ca3af;font-weight:600">/ <span class="ru">мес</span><span class="en">month</span></div><div style="font-size:12px;color:#6b7280;margin-top:12px;line-height:1.6;text-align:left"><span class="ru">Telegram-бот, отчёты, управление меню и заказами</span><span class="en">Telegram bot, reports, menu & order management</span></div></div>
+    <div class="dr-card" style="text-align:center;border-color:#6366f1"><div style="font-size:28px;font-weight:900;color:#6b7280">Small</div><div style="font-size:32px;font-weight:900;color:#6366f1;margin:12px 0">$250</div><div style="font-size:11px;color:#9ca3af;font-weight:600">/ <span class="ru">мес</span><span class="en">month</span></div><div style="font-size:12px;color:#6b7280;margin-top:12px;line-height:1.6;text-align:left"><span class="ru">+ POS интеграция, аналитические дашборды</span><span class="en">+ POS integration, analytical dashboards</span></div></div>
+    <div class="dr-card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#6b7280">Medium</div><div style="font-size:32px;font-weight:900;color:#6366f1;margin:12px 0">$500</div><div style="font-size:11px;color:#9ca3af;font-weight:600">/ <span class="ru">мес</span><span class="en">month</span></div><div style="font-size:12px;color:#6b7280;margin-top:12px;line-height:1.6;text-align:left"><span class="ru">+ управление курьерами</span><span class="en">+ courier management</span></div></div>
+    <div class="dr-card" style="text-align:center"><div style="font-size:28px;font-weight:900;color:#6b7280">Big</div><div style="font-size:32px;font-weight:900;color:#6366f1;margin:12px 0">$1,000</div><div style="font-size:11px;color:#9ca3af;font-weight:600">/ <span class="ru">мес</span><span class="en">month</span></div><div style="font-size:12px;color:#6b7280;margin-top:12px;line-height:1.6;text-align:left"><span class="ru">Всё + сайт, приложение, 24/7 поддержка</span><span class="en">All + website, app, 24/7 support</span></div></div>
+  </div>
+</div>
+
+<!-- ===== STRATEGY ===== -->
+<div class="section" id="sec-strategy">
+  <div class="section-header">
+    <h2><span class="ru">Стратегия роста</span><span class="en">Growth Strategy</span></h2>
+  </div>
+  <div class="dr-card-grid cols-2">
+    <div class="dr-card"><div style="font-size:20px;margin-bottom:8px">📈</div><div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">Укрепление ядра и рост выручки</span><span class="en">Core Strengthening & Revenue Growth</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Расширение клиентской базы, улучшение retention, рост LTV, развитие продукта, масштабирование продаж</span><span class="en">Customer base expansion, improved retention, LTV growth, product development, sales scaling</span></div></div>
+    <div class="dr-card"><div style="font-size:20px;margin-bottom:8px">🏗️</div><div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">Развитие платформы</span><span class="en">Platform Growth</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Расширение инфраструктурного слоя, монетизация партнёров, развитие сетевых эффектов</span><span class="en">Infrastructure layer expansion, partner monetization, network effects development</span></div></div>
+    <div class="dr-card"><div style="font-size:20px;margin-bottom:8px">🌍</div><div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">Географическая экспансия</span><span class="en">Geographic Expansion</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">Выход на рынки MENA, Кавказ, Азия. Локализация продукта и интеграций</span><span class="en">Entering MENA, Caucasus, Asia markets. Product and integration localization</span></div></div>
+    <div class="dr-card"><div style="font-size:20px;margin-bottom:8px">🤖</div><div style="font-size:15px;font-weight:700;color:#1a1a2e;margin-bottom:8px"><span class="ru">Технологии и AI</span><span class="en">Technology & AI</span></div><div style="font-size:12px;color:#6b7280;line-height:1.6"><span class="ru">AI-автоматизация, улучшение архитектуры, увеличение скорости разработки</span><span class="en">AI automation, architecture improvement, faster development cycles</span></div></div>
+  </div>
+</div>
+
+<!-- ===== PRESS ===== -->
+<div class="section" id="sec-press">
+  <div class="section-header">
+    <h2><span class="ru">Пресса и медиа</span><span class="en">Press & Media</span></h2>
+  </div>
+  <div class="doc-list">
+    <div class="doc-item" onclick="window.open('https://thetech.uz','_blank')" style="cursor:pointer">
+      <div class="doc-icon link">📰</div>
+      <div class="doc-info"><div class="doc-name">The Tech · Mansur Ismagulov</div><div class="doc-meta"><span class="ru">Delever.uz — стартап, который занимается доставкой еды в Узбекистане</span><span class="en">Delever.uz — food delivery startup in Uzbekistan</span></div></div>
+    </div>
+    <div class="doc-item" onclick="window.open('https://youtu.be/nwf1SF6y9iY','_blank')" style="cursor:pointer">
+      <div class="doc-icon" style="background:rgba(239,68,68,.08);color:#ef4444">▶️</div>
+      <div class="doc-info"><div class="doc-name">Umed Rahimov · YouTube</div><div class="doc-meta"><span class="ru">Как Delever помогает ресторанам сэкономить на доставке</span><span class="en">How Delever helps restaurants save on delivery</span></div></div>
+    </div>
+    <div class="doc-item" style="cursor:pointer">
+      <div class="doc-icon" style="background:rgba(239,68,68,.08);color:#ef4444">▶️</div>
+      <div class="doc-info"><div class="doc-name"><span class="ru">Кахрамон Кипер · YouTube</span><span class="en">Kakhramon Kiper · YouTube</span></div><div class="doc-meta">R_keeper + Delever, Click, HUMO, Uzcard</div></div>
+    </div>
+    <div class="doc-item" style="cursor:pointer">
+      <div class="doc-icon" style="background:rgba(239,68,68,.08);color:#ef4444">▶️</div>
+      <div class="doc-info"><div class="doc-name"><span class="ru">Кахрамон Кипер · YouTube</span><span class="en">Kakhramon Kiper · YouTube</span></div><div class="doc-meta"><span class="ru">За кулисьем бизнеса доставки с руководителем Delever</span><span class="en">Behind the scenes of delivery business with Delever CEO</span></div></div>
+    </div>
+    <div class="doc-item" style="cursor:pointer">
+      <div class="doc-icon link">📰</div>
+      <div class="doc-info"><div class="doc-name">Spot.uz</div><div class="doc-meta"><span class="ru">Стартап Delever привлёк $100 тысяч венчурных инвестиций от Aloqa Ventures</span><span class="en">Startup Delever raised $100K venture investment from Aloqa Ventures</span></div></div>
+    </div>
+    <div class="doc-item">
+      <div class="doc-icon link">🔗</div>
+      <div class="doc-info"><div class="doc-name">delever.io</div><div class="doc-meta"><span class="ru">Официальный сайт</span><span class="en">Official website</span></div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script>
+const pnlData = {
+  fact: {
+    months: ['Oct 24','Nov 24','Dec 24','Jan 25','Feb 25','Mar 25','Apr 25','May 25','Jun 25','Jul 25','Aug 25'],
+    rows: [
+      {label:'Revenue',labelRu:'Выручка',values:[119.0,121.5,801.9,343.4,375.4,479.2,434.8,450.9,474.6,482.3,494.6],total:true,cls:''},
+      {label:'Service Provision (MRR)',labelRu:'Подписки (MRR)',values:[104.4,71.3,565.5,281.9,316.8,356.7,382.2,404.7,437.5,444.1,474.3],cls:'row-sub'},
+      {label:'Development',labelRu:'Разработка',values:[0,10.2,236.5,47.4,18.6,102.5,32.7,6.2,0,18.2,0],cls:'row-sub'},
+      {label:'Other Income',labelRu:'Прочие доходы',values:[14.5,40.0,0,14.1,40.0,20.0,20.0,40.0,37.1,20.0,20.3],cls:'row-sub'},
+      {label:'Expenses',labelRu:'Расходы',values:[35.2,353.3,275.9,318.6,252.5,357.5,412.5,405.7,433.5,439.3,521.8],total:true,cls:''},
+      {label:'Payroll',labelRu:'ФОТ',values:[20.0,283.7,152.7,200.1,164.7,249.1,262.2,274.6,263.9,305.0,365.8],cls:'row-sub'},
+      {label:'Taxes',labelRu:'Налоги',values:[0,14.7,12.5,67.7,11.7,14.2,23.3,16.4,31.9,41.4,33.8],cls:'row-sub'},
+      {label:'Office',labelRu:'Офис',values:[7.4,7.4,23.4,39.6,42.0,27.5,49.9,45.3,45.2,40.1,43.0],cls:'row-sub'},
+      {label:'Other',labelRu:'Прочие',values:[7.8,47.5,87.3,11.3,34.0,66.7,77.1,69.4,92.6,52.8,79.2],cls:'row-sub'},
+      {label:'Net Profit',labelRu:'Чистая прибыль',values:[83.8,-231.9,526.1,24.8,122.9,121.7,22.3,45.2,41.1,43.0,-27.2],total:true,profit:true}
+    ]
+  },
+  plan: {
+    months: ['Jan 26','Feb 26','Mar 26','Apr 26','May 26','Jun 26','Jul 26','Aug 26','Sep 26','Oct 26','Nov 26','Dec 26'],
+    rows: [
+      {label:'Revenue',labelRu:'Выручка',values:[732.0,746.8,740.1,789.9,842.3,895.0,918.6,962.5,1006.8,1051.3,1096.2,1141.4],total:true},
+      {label:'MRR',labelRu:'MRR',values:[623.8,658.5,696.9,747.8,800.3,863.2,908.0,953.2,998.9,1045.1,1091.8,1139.0],cls:'row-sub'},
+      {label:'Development',labelRu:'Разработка',values:[88.2,68.3,24.4,24.5,24.6,24.7,24.8,24.9,25.0,25.1,25.2,25.3],cls:'row-sub'},
+      {label:'Interest',labelRu:'Проценты',values:[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],cls:'row-sub'},
+      {label:'Expenses',labelRu:'Расходы',values:[615.0,652.5,690.4,743.6,690.7,691.4,716.7,695.5,696.1,761.7,762.3,793.0],total:true},
+      {label:'Payroll',labelRu:'ФОТ',values:[381.6,395.5,403.6,458.6,455.1,455.1,455.2,457.2,457.3,522.4,522.4,522.5],cls:'row-sub'},
+      {label:'Taxes',labelRu:'Налоги',values:[26.7,25.6,25.4,25.6,25.8,26.0,26.1,26.2,26.3,26.4,26.5,26.7],cls:'row-sub'},
+      {label:'Marketing',labelRu:'Маркетинг',values:[18.2,30.4,30.4,30.4,30.4,30.4,30.4,30.4,30.4,30.4,30.4,30.4],cls:'row-sub'},
+      {label:'Other',labelRu:'Прочие',values:[188.6,201.1,230.9,229.0,179.4,179.9,205.1,181.8,182.1,182.6,183.0,213.5],cls:'row-sub'},
+      {label:'Net Profit',labelRu:'Чистая прибыль',values:[117.0,94.3,49.7,46.3,151.6,203.7,201.9,267.0,310.7,289.6,333.9,348.4],total:true,profit:true}
+    ]
+  }
+};
+
+let currentPnlPeriod = 'fact';
+
+function renderPnl(period) {
+  const d = pnlData[period];
+  const isRu = document.body.classList.contains('lang-ru');
+  let head = '<tr><th>' + (isRu ? 'Статья' : 'Item') + '</th>';
+  d.months.forEach(m => head += '<th style="text-align:right">' + m + '</th>');
+  head += '</tr>';
+  document.getElementById('pnlHead').innerHTML = head;
+
+  let body = '';
+  d.rows.forEach(r => {
+    const cls = (r.total ? ' row-total' : '');
+    const label = isRu && r.labelRu ? r.labelRu : r.label;
+    body += '<tr class="' + cls + '"><td class="row-header ' + (r.cls || '') + '">' + label + '</td>';
+    r.values.forEach(v => {
+      let numCls = '';
+      if (r.profit) numCls = v >= 0 ? ' num-positive' : ' num-negative';
+      body += '<td style="text-align:right" class="' + numCls + '">' + v.toFixed(1) + 'M</td>';
+    });
+    body += '</tr>';
+  });
+  document.getElementById('pnlBody').innerHTML = body;
+}
+
+function setPnlPeriod(period, btn) {
+  currentPnlPeriod = period;
+  document.querySelectorAll('#pnlPeriod button').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderPnl(period);
+}
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  const items = document.querySelectorAll('.sidebar-item');
+  items.forEach(item => {
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes("'" + id + "'"))
+      item.classList.add('active');
+  });
+  const titles = {
+    overview: {ru:'Обзор компании',en:'Company Overview'},
+    team: {ru:'Команда',en:'Team'},
+    legal: {ru:'Юридические документы',en:'Legal & Corporate'},
+    pnl: {ru:'P&L отчёт',en:'P&L Statement'},
+    balance: {ru:'Баланс',en:'Balance Sheet'},
+    cashflow: {ru:'Cash Flow',en:'Cash Flow'},
+    traction: {ru:'Трекшн и метрики',en:'Traction & Metrics'},
+    product: {ru:'Описание продукта',en:'Product Description'},
+    techstack: {ru:'Технологии',en:'Technology Stack'},
+    market: {ru:'Исследование рынка',en:'Market Research'},
+    competitive: {ru:'Конкурентный анализ',en:'Competitive Analysis'},
+    revenue: {ru:'Модель монетизации',en:'Revenue Model'},
+    strategy: {ru:'Стратегия роста',en:'Growth Strategy'},
+    press: {ru:'Пресса и медиа',en:'Press & Media'}
+  };
+  const t = titles[id];
+  if (t) {
+    document.getElementById('topbarTitle').innerHTML = '<span class="ru">' + t.ru + '</span><span class="en">' + t.en + '</span>';
+  }
+  window.scrollTo(0, 0);
+}
+
+function setLang(lang) {
+  document.body.className = 'lang-' + lang;
+  document.querySelectorAll('.lang-switch button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.lang-switch button').forEach(b => {
+    if (b.textContent.trim() === lang.toUpperCase()) b.classList.add('active');
+  });
+  renderPnl(currentPnlPeriod);
+}
+
+function enterDataRoom() {
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+}
+
+renderPnl('fact');
+
+if (window.location.hash === '#access' || window.location.search.includes('token=')) {
+  enterDataRoom();
+}
+</script>
+</body>
+</html>
